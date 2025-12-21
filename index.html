@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韓國首爾旅行助手</title>
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 圖標庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        :root {
+            --primary-yellow: #FFE8B5;
+            --secondary-blue: #B5D8FF;
+            --background-beige: #FFF9F0;
+            --accent-pink: #FFC9D2;
+            --text-dark: #5A5A5A;
+        }
+        
+        body {
+            background-color: var(--background-beige);
+            color: var(--text-dark);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(255, 200, 180, 0.2);
+        }
+        
+        .rounded-xl {
+            border-radius: 16px;
+        }
+        
+        /* 自定義滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--primary-yellow);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-pink);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-6">
+    <div id="app" class="max-w-md mx-auto">
+        <!-- 頁面標題 -->
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2" style="color: #FF8A65;">韓國首爾旅行助手</h1>
+            <p class="text-lg" style="color: #5A5A5A;">五日四夜行程規劃 • 2025年1月12-16日</p>
+            <div class="flex justify-center space-x-2 mt-4">
+                <div class="w-3 h-3 rounded-full" style="background-color: #FFE8B5;"></div>
+                <div class="w-3 h-3 rounded-full" style="background-color: #B5D8FF;"></div>
+                <div class="w-3 h-3 rounded-full" style="background-color: #FFC9D2;"></div>
+            </div>
+        </header>
+
+        <!-- 天氣卡片 -->
+        <section class="mb-8">
+            <div class="card-shadow rounded-xl p-5 mb-4" style="background-color: #B5D8FF;">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold" style="color: #2C5282;">今日天氣</h2>
+                    <i class="fas fa-sun text-2xl" style="color: #FF8A65;"></i>
+                </div>
+                
+                <!-- 天氣模擬數據 -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(255, 255, 255, 0.6);">
+                        <p class="text-sm mb-1">溫度</p>
+                        <p class="text-2xl font-bold" style="color: #2C5282;">{{ weather.temp }}°C</p>
+                    </div>
+                    <div class="text-center p-3 rounded-lg" style="background-color: rgba(255, 255, 255, 0.6);">
+                        <p class="text-sm mb-1">濕度</p>
+                        <p class="text-2xl font-bold" style="color: #2C5282;">{{ weather.humidity }}%</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span><i class="fas fa-wind mr-2" style="color: #2C5282;"></i> 風速</span>
+                        <span class="font-medium">{{ weather.windSpeed }} km/h</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span><i class="fas fa-sun mr-2" style="color: #FF8A65;"></i> 日出時間</span>
+                        <span class="font-medium">{{ weather.sunrise }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span><i class="fas fa-moon mr-2" style="color: #2C5282;"></i> 日落時間</span>
+                        <span class="font-medium">{{ weather.sunset }}</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <button @click="refreshWeather" class="px-4 py-2 rounded-lg font-medium" style="background-color: #FFE8B5; color: #5A5A5A;">
+                        <i class="fas fa-sync-alt mr-2"></i>更新天氣
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-sm text-center" style="color: #5A5A5A;">
+                <p><i class="fas fa-info-circle mr-1"></i> 天氣數據為示例資料，實際天氣請參考當地氣象局</p>
+            </div>
+        </section>
+
+        <!-- 行程表 -->
+        <section class="mb-8">
+            <div class="flex items-center mb-4">
+                <div class="w-1 h-6 rounded-full mr-3" style="background-color: #FF8A65;"></div>
+                <h2 class="text-2xl font-bold" style="color: #2C5282;">五日四夜行程表</h2>
+            </div>
+            
+            <!-- 行程導航 -->
+            <div class="flex overflow-x-auto mb-6 pb-2">
+                <button 
+                    v-for="(day, index) in itinerary" 
+                    :key="day.date"
+                    @click="activeDay = index"
+                    class="flex-shrink-0 px-4 py-2 mx-1 rounded-full font-medium transition-all"
+                    :class="activeDay === index ? 'text-white' : ''"
+                    :style="activeDay === index ? 'background-color: #FF8A65;' : 'background-color: #FFE8B5; color: #5A5A5A;'"
+                >
+                    {{ day.date }}
+                </button>
+            </div>
+            
+            <!-- 當天行程內容 -->
+            <div class="card-shadow rounded-xl p-5" style="background-color: #FFFFFF;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold" style="color: #2C5282;">{{ itinerary[activeDay].title }}</h3>
+                    <span class="px-3 py-1 rounded-full text-sm" style="background-color: #FFE8B5; color: #5A5A5A;">
+                        第 {{ activeDay + 1 }} 天
+                    </span>
+                </div>
+                
+                <div class="space-y-5">
+                    <div v-for="item in itinerary[activeDay].schedule" :key="item.time" class="border-l-4 pl-4 py-1" style="border-color: #B5D8FF;">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="font-bold" style="color: #2C5282;">{{ item.time }}</h4>
+                            <button 
+                                @click="openNaverMap(item.location)"
+                                class="px-3 py-1 text-xs rounded-lg font-medium flex items-center"
+                                style="background-color: #FFE8B5; color: #5A5A5A;"
+                            >
+                                <i class="fas fa-map-marker-alt mr-1"></i> 導航
+                            </button>
+                        </div>
+                        <p class="mb-2">{{ item.activity }}</p>
+                        
+                        <!-- 交通資訊 -->
+                        <div v-if="item.transport" class="text-sm p-2 rounded-lg mt-2" style="background-color: #F7F9FC;">
+                            <p class="font-medium mb-1"><i class="fas fa-bus mr-1" style="color: #FF8A65;"></i> 交通方式</p>
+                            <p class="mb-1">{{ item.transport }}</p>
+                            <p v-if="item.duration" class="mb-1">乘車時間：{{ item.duration }}</p>
+                            <p v-if="item.pickup" class="mb-1">上車位置：{{ item.pickup }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 美食清單 -->
+        <section class="mb-10">
+            <div class="flex items-center mb-4">
+                <div class="w-1 h-6 rounded-full mr-3" style="background-color: #FF8A65;"></div>
+                <h2 class="text-2xl font-bold" style="color: #2C5282;">美食清單</h2>
+            </div>
+            
+            <div class="card-shadow rounded-xl p-5" style="background-color: #FFFFFF;">
+                <p class="mb-4 text-center" style="color: #5A5A5A;">
+                    點擊左側框框標記已完成的美食體驗
+                </p>
+                
+                <div class="space-y-4">
+                    <div v-for="(food, index) in foodList" :key="food.name" class="flex items-center p-3 rounded-lg transition-all" :class="food.checked ? 'bg-green-50' : ''" style="border: 1px solid #FFE8B5;">
+                        <div class="mr-4">
+                            <input 
+                                type="checkbox" 
+                                :id="'food-' + index" 
+                                v-model="food.checked"
+                                class="w-5 h-5 rounded-full"
+                                style="accent-color: #FF8A65;"
+                            >
+                        </div>
+                        <div class="flex-1">
+                            <label :for="'food-' + index" class="cursor-pointer">
+                                <h4 class="font-bold text-lg" :class="food.checked ? 'line-through text-gray-500' : ''" style="color: #2C5282;">
+                                    {{ food.name }}
+                                </h4>
+                                <p class="text-sm mt-1" style="color: #5A5A5A;">
+                                    <i class="fas fa-map-pin mr-1"></i> {{ food.location }}
+                                </p>
+                            </label>
+                        </div>
+                        <div class="text-2xl" style="color: #FF8A65;">
+                            <i :class="food.icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-dashed" style="border-color: #FFE8B5;">
+                    <div class="flex justify-between items-center">
+                        <p style="color: #2C5282;">已完成：{{ completedFoods }} / {{ foodList.length }}</p>
+                        <button 
+                            @click="resetFoodList"
+                            class="px-4 py-2 rounded-lg font-medium"
+                            style="background-color: #FFE8B5; color: #5A5A5A;"
+                        >
+                            <i class="fas fa-redo mr-2"></i>重設清單
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁尾 -->
+        <footer class="text-center py-4" style="color: #5A5A5A;">
+            <p class="mb-2">祝您韓國首爾之旅愉快！</p>
+            <p class="text-sm">© 2025 韓國首爾旅行助手</p>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+        
+        createApp({
+            setup() {
+                // 天氣數據
+                const weather = ref({
+                    temp: -2,
+                    humidity: 65,
+                    windSpeed: 12,
+                    sunrise: "07:45",
+                    sunset: "17:32"
+                });
+                
+                // 更新天氣
+                const refreshWeather = () => {
+                    // 模擬更新天氣數據
+                    const tempChange = Math.floor(Math.random() * 4) - 2; // -2到+2的變化
+                    weather.value.temp += tempChange;
+                    weather.value.humidity = Math.floor(Math.random() * 20) + 55; // 55-75%
+                    
+                    // 簡單的提示
+                    alert('天氣資料已更新！');
+                };
+                
+                // 行程數據
+                const itinerary = ref([
+                    {
+                        date: "1月12日（一）",
+                        title: "抵達首爾 & 弘大探索",
+                        schedule: [
+                            {
+                                time: "10:25 - 14:55",
+                                activity: "香港國際機場（起飛） — 仁川國際機場",
+                                transport: "飛機 (KE610)",
+                                duration: "約3小時30分鐘",
+                                location: "仁川國際機場"
+                            },
+                            {
+                                time: "15:30 - 16:30",
+                                activity: "仁川國際機場前往酒店 (Brown Suites Seoul)",
+                                transport: "機場快線 (AREX) + 地鐵",
+                                duration: "約1小時",
+                                pickup: "仁川國際機場站",
+                                location: "Brown Suites Seoul"
+                            },
+                            {
+                                time: "17:30 - 21:00",
+                                activity: "酒店前往弘大商業街（弘大壁畫街、文創商場、CU拉麵圖書館）",
+                                transport: "地鐵2號線",
+                                duration: "約25分鐘",
+                                pickup: "市廳站",
+                                location: "弘大入口站"
+                            },
+                            {
+                                time: "21:30 - 22:00",
+                                activity: "弘大商業街前往酒店",
+                                transport: "地鐵2號線",
+                                duration: "約25分鐘",
+                                pickup: "弘大入口站",
+                                location: "Brown Suites Seoul"
+                            }
+                        ]
+                    },
+                    {
+                        date: "1月13日（二）",
+                        title: "明洞全日遊",
+                        schedule: [
+                            {
+                                time: "07:10",
+                                activity: "酒店前往明洞站3號出口",
+                                transport: "地鐵1號線 + 4號線",
+                                duration: "約30分鐘",
+                                pickup: "市廳站",
+                                location: "明洞站3號出口"
+                            },
+                            {
+                                time: "07:40 - 17:30",
+                                activity: "明洞全日觀光",
+                                transport: "步行",
+                                location: "明洞商業區"
+                            },
+                            {
+                                time: "17:30 - 21:00",
+                                activity: "明洞商業街購物與晚餐",
+                                transport: "步行",
+                                location: "明洞商業街"
+                            },
+                            {
+                                time: "21:30 - 22:00",
+                                activity: "明洞往酒店",
+                                transport: "地鐵4號線 + 1號線",
+                                duration: "約30分鐘",
+                                pickup: "明洞站",
+                                location: "Brown Suites Seoul"
+                            }
+                        ]
+                    },
+                    {
+                        date: "1月14日（三）",
+                        title: "南山塔 & 樂天百貨",
+                        schedule: [
+                            {
+                                time: "09:30 - 10:00",
+                                activity: "酒店前往南山塔",
+                                transport: "地鐵 + 南山纜車",
+                                duration: "約30分鐘",
+                                pickup: "市廳站",
+                                location: "南山塔"
+                            },
+                            {
+                                time: "10:00 - 13:00",
+                                activity: "南山塔觀光",
+                                transport: "步行",
+                                location: "南山公園"
+                            },
+                            {
+                                time: "13:30 - 14:00",
+                                activity: "南山塔往明洞（午餐）",
+                                transport: "南山纜車 + 步行",
+                                duration: "約30分鐘",
+                                location: "明洞"
+                            },
+                            {
+                                time: "15:00 - 16:00",
+                                activity: "明洞往樂天百貨",
+                                transport: "步行",
+                                duration: "約10分鐘",
+                                location: "樂天百貨明洞總店"
+                            },
+                            {
+                                time: "19:00 - 19:30",
+                                activity: "樂天百貨往酒店",
+                                transport: "地鐵2號線",
+                                duration: "約25分鐘",
+                                pickup: "乙支路入口站",
+                                location: "Brown Suites Seoul"
+                            }
+                        ]
+                    },
+                    {
+                        date: "1月15日（四）",
+                        title: "東大門 & 廣藏市場",
+                        schedule: [
+                            {
+                                time: "10:00 - 10:30",
+                                activity: "酒店往東大門",
+                                transport: "地鐵1號線",
+                                duration: "約25分鐘",
+                                pickup: "市廳站",
+                                location: "東大門歷史文化公園站"
+                            },
+                            {
+                                time: "10:30 - 15:00",
+                                activity: "東大門商圈購物",
+                                transport: "步行",
+                                location: "東大門設計廣場、Doota商城"
+                            },
+                            {
+                                time: "15:30 - 16:00",
+                                activity: "東大門往廣藏市場",
+                                transport: "地鐵1號線",
+                                duration: "約15分鐘",
+                                pickup: "東大門站",
+                                location: "鍾路5街站"
+                            },
+                            {
+                                time: "16:00 - 19:00",
+                                activity: "廣藏市場美食探索",
+                                transport: "步行",
+                                location: "廣藏市場"
+                            },
+                            {
+                                time: "19:30 - 20:00",
+                                activity: "廣藏市場往酒店",
+                                transport: "地鐵1號線",
+                                duration: "約20分鐘",
+                                pickup: "鍾路5街站",
+                                location: "Brown Suites Seoul"
+                            }
+                        ]
+                    },
+                    {
+                        date: "1月16日（五）",
+                        title: "弘大最後購物 & 回程",
+                        schedule: [
+                            {
+                                time: "10:00 - 10:30",
+                                activity: "酒店往弘大商業街",
+                                transport: "地鐵2號線",
+                                duration: "約25分鐘",
+                                pickup: "市廳站",
+                                location: "弘大入口站"
+                            },
+                            {
+                                time: "10:30 - 15:00",
+                                activity: "弘大最後購物與午餐",
+                                transport: "步行",
+                                location: "弘大商業街"
+                            },
+                            {
+                                time: "15:30 - 16:50",
+                                activity: "弘大前往仁川國際機場",
+                                transport: "機場快線 (AREX)",
+                                duration: "約1小時20分鐘",
+                                pickup: "弘大入口站",
+                                location: "仁川國際機場"
+                            },
+                            {
+                                time: "16:50 - 18:50",
+                                activity: "辦理登機手續與出境",
+                                transport: "步行",
+                                location: "仁川國際機場"
+                            },
+                            {
+                                time: "18:50 - 22:05",
+                                activity: "仁川國際機場（起飛） — 香港國際機場",
+                                transport: "飛機 (KE611)",
+                                duration: "約3小時15分鐘",
+                                location: "香港國際機場"
+                            }
+                        ]
+                    }
+                ]);
+                
+                // 當前顯示的行程日
+                const activeDay = ref(0);
+                
+                // 打開Naver Map導航
+                const openNaverMap = (location) => {
+                    // 由於Naver Map需要韓國地區才能使用，這裡使用Google Maps作為替代
+                    // 實際應用中可以根據需要調整
+                    const encodedLocation = encodeURIComponent(location + " 서울");
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`, '_blank');
+                };
+                
+                // 美食清單
+                const foodList = ref([
+                    { name: "醬油蟹", location: "弘大弘益醬蟹", checked: false, icon: "fas fa-crab" },
+                    { name: "鐵板炒雞", location: "明洞Bandak Bandak", checked: false, icon: "fas fa-utensils" },
+                    { name: "韓式燒肉", location: "明洞荒謬的生肉", checked: false, icon: "fas fa-bacon" },
+                    { name: "韓式部隊鍋", location: "明洞樂伯部隊鍋", checked: false, icon: "fas fa-pot-food" },
+                    { name: "炸雞", location: "東大門橋村炸雞1號店", checked: false, icon: "fas fa-drumstick-bite" },
+                    { name: "生拌牛肉", location: "廣藏市場富村生牛肉", checked: false, icon: "fas fa-meat" },
+                    { name: "米熱狗", location: "各大地鐵站附近", checked: false, icon: "fas fa-hotdog" }
+                ]);
+                
+                // 計算已完成的美食數量
+                const completedFoods = computed(() => {
+                    return foodList.value.filter(food => food.checked).length;
+                });
+                
+                // 重設美食清單
+                const resetFoodList = () => {
+                    if (confirm("確定要重設美食清單嗎？所有勾選將會被清除。")) {
+                        foodList.value.forEach(food => {
+                            food.checked = false;
+                        });
+                    }
+                };
+                
+                return {
+                    weather,
+                    refreshWeather,
+                    itinerary,
+                    activeDay,
+                    openNaverMap,
+                    foodList,
+                    completedFoods,
+                    resetFoodList
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
