@@ -27,6 +27,7 @@
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             min-height: 100vh;
             position: relative;
+            overflow-x: hidden;
         }
         
         .background-image {
@@ -43,7 +44,7 @@
         }
         
         .card {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(10px);
@@ -105,6 +106,79 @@
         .weather-icon {
             font-size: 2.5rem;
             line-height: 1;
+        }
+        
+        .day-selector {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .day-selector::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .day-tab {
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .day-tab.active {
+            background-color: #fef3c7;
+            color: #92400e;
+            border-color: #fbbf24;
+        }
+        
+        .detail-timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .detail-timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.25rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fbbf24;
+            border: 3px solid #fef3c7;
+            z-index: 2;
+        }
+        
+        .detail-timeline-item:after {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% + 0.5rem);
+            background-color: #fbbf24;
+            z-index: 1;
+        }
+        
+        .detail-timeline-item:last-child:after {
+            display: none;
+        }
+        
+        .transport-icon {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.3s ease;
+        }
+        
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
         }
     </style>
 </head>
@@ -267,35 +341,70 @@
                         詳細行程表
                     </h2>
                     
-                    <div class="space-y-8">
-                        <div v-for="day in scheduleDetails" :key="day.date" class="bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl">
-                            <h3 class="font-bold text-lg text-amber-700 mb-4 pb-2 border-b border-amber-100">{{ day.date }}（{{ day.day }}）</h3>
+                    <!-- 日子選擇器 -->
+                    <div class="mb-6">
+                        <div class="flex overflow-x-auto day-selector pb-2 space-x-2">
+                            <button 
+                                v-for="day in scheduleDetails" 
+                                :key="day.date"
+                                @click="selectDay(day.date)"
+                                class="day-tab px-4 py-2 border border-amber-200 rounded-full text-sm font-medium"
+                                :class="{'active': selectedDay === day.date}"
+                            >
+                                {{ day.date }}（{{ day.day }}）
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 選中日子的行程 -->
+                    <transition name="fade" mode="out-in">
+                        <div v-for="day in scheduleDetails" 
+                             v-if="selectedDay === day.date" 
+                             :key="day.date"
+                             class="space-y-6">
                             
-                            <div class="space-y-4">
-                                <div v-for="item in day.items" :key="item.time" class="bg-white p-4 rounded-lg">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex-1">
-                                            <div class="flex items-center">
-                                                <span class="material-icons text-amber-500 text-sm mr-2">schedule</span>
-                                                <span class="font-bold text-amber-700">{{ item.time }}</span>
-                                            </div>
-                                            <div class="mt-2 font-medium text-gray-800">{{ item.activity }}</div>
-                                            <div v-if="item.transport" class="mt-2 text-sm text-gray-600 flex items-start">
-                                                <span class="material-icons text-blue-400 text-sm mr-1">directions_transit</span>
-                                                {{ item.transport }}
-                                            </div>
-                                            <div v-if="item.duration" class="mt-1 text-sm text-gray-500">
-                                                所需時間：{{ item.duration }}
-                                            </div>
+                            <!-- 日期標題 -->
+                            <div class="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl">
+                                <h3 class="font-bold text-lg text-amber-800">{{ day.date }}（{{ day.day }}）</h3>
+                                <p class="text-amber-600 text-sm mt-1">{{ day.overview }}</p>
+                            </div>
+                            
+                            <!-- 時間軸行程 -->
+                            <div class="space-y-1">
+                                <div v-for="(item, index) in day.items" :key="index" class="detail-timeline-item">
+                                    <div class="bg-white p-4 rounded-xl shadow-sm">
+                                        <!-- 時間標籤 -->
+                                        <div class="flex items-center mb-2">
+                                            <span class="material-icons text-amber-500 text-sm mr-2">schedule</span>
+                                            <span class="font-bold text-amber-700">{{ item.time }}</span>
+                                            <span v-if="item.duration" class="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+                                                約{{ item.duration }}
+                                            </span>
                                         </div>
-                                        <button @click="openNaverMap(item)" class="ml-2 bg-blue-100 text-blue-700 p-2 rounded-full">
-                                            <span class="material-icons">map</span>
-                                        </button>
+                                        
+                                        <!-- 活動內容 -->
+                                        <div class="font-medium text-gray-800 mb-2">{{ item.activity }}</div>
+                                        
+                                        <!-- 交通資訊 -->
+                                        <div v-if="item.transport" class="flex items-start mt-3 mb-3">
+                                            <div class="transport-icon mr-2">
+                                                <span class="material-icons text-sm">directions_transit</span>
+                                            </div>
+                                            <div class="text-sm text-gray-600 flex-1">{{ item.transport }}</div>
+                                        </div>
+                                        
+                                        <!-- 地圖按鈕 -->
+                                        <div class="flex justify-end mt-3">
+                                            <button @click="openNaverMap(item)" class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center text-sm">
+                                                <span class="material-icons text-sm mr-1">map</span>
+                                                Naver地圖導航
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </transition>
                 </div>
             </div>
             
@@ -327,7 +436,7 @@
                                     <div class="mt-1 text-sm text-gray-600">{{ food.location }}</div>
                                     
                                     <!-- 備註區域 -->
-                                    <div class="mt-3">
+                                    <div v-if="food.showNote" class="mt-3">
                                         <textarea 
                                             v-model="food.note" 
                                             placeholder="添加備註..." 
@@ -404,6 +513,9 @@
                 // 當前頁面
                 const currentPage = ref('home');
                 
+                // 當前選中的日子
+                const selectedDay = ref('1月12日');
+                
                 // 首頁時間軸項目
                 const timelineItems = ref([
                     { date: '1月12日', title: '香港 → 仁川機場 → 弘大', time: '10:25 - 22:00' },
@@ -422,11 +534,12 @@
                     { day: '週五', date: '1/16', icon: 'cloud', condition: '多雲', temp: 1, high: 3, low: -4, precip: 10 }
                 ]);
                 
-                // 詳細行程
+                // 詳細行程（改為分日顯示）
                 const scheduleDetails = ref([
                     {
                         date: '1月12日',
                         day: '星期一',
+                        overview: '抵達首爾第一天，機場到酒店，弘大探索',
                         items: [
                             { 
                                 time: '10:25 - 14:55', 
@@ -461,6 +574,7 @@
                     {
                         date: '1月13日',
                         day: '星期二',
+                        overview: 'eobi雪景區賞雪，明洞購物',
                         items: [
                             { 
                                 time: '07:10', 
@@ -495,6 +609,7 @@
                     {
                         date: '1月14日',
                         day: '星期三',
+                        overview: '南山塔觀光，明洞和樂天百貨購物',
                         items: [
                             { 
                                 time: '09:00 - 12:00', 
@@ -529,6 +644,7 @@
                     {
                         date: '1月15日',
                         day: '星期四',
+                        overview: '東大門購物，廣藏市場美食',
                         items: [
                             { 
                                 time: '10:00 - 10:30', 
@@ -563,6 +679,7 @@
                     {
                         date: '1月16日',
                         day: '星期五',
+                        overview: '弘大最後購物，返回香港',
                         items: [
                             { 
                                 time: '10:00 - 12:00', 
@@ -587,7 +704,7 @@
                             },
                             { 
                                 time: '16:50 - 22:05', 
-                                activity: '仁川國際機場 (起飛) → 香港國際機場 (抵達)', 
+                                activity: '仁川國際機場（起飛） → 香港國際機場（抵達）', 
                                 transport: '飛機 (KE609)',
                                 duration: '4小時15分鐘',
                                 mapQuery: '인천국제공항'
@@ -612,6 +729,11 @@
                 const checkedCount = computed(() => {
                     return foodList.value.filter(food => food.checked).length;
                 });
+                
+                // 選擇日子
+                const selectDay = (date) => {
+                    selectedDay.value = date;
+                };
                 
                 // 更新天氣數據
                 const updateWeather = () => {
@@ -638,16 +760,25 @@
                 
                 return {
                     currentPage,
+                    selectedDay,
                     timelineItems,
                     weatherForecast,
                     scheduleDetails,
                     foodList,
                     checkedCount,
+                    selectDay,
                     updateWeather,
                     openNaverMap,
                     openGoogleMap,
                     toggleFoodNote
                 };
+            },
+            
+            mounted() {
+                // 設置默認選中的日子
+                if (this.scheduleDetails.length > 0) {
+                    this.selectedDay = this.scheduleDetails[0].date;
+                }
             }
         }).mount('#app');
     </script>
