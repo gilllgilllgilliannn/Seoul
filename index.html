@@ -15,19 +15,29 @@
         
         * {
             font-family: 'Noto Sans TC', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             background-color: #fef9f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
         
         .app-container {
+            width: 100%;
             max-width: 480px;
-            margin: 0 auto;
+            min-height: 800px;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            min-height: 100vh;
+            border-radius: 20px;
+            overflow: hidden;
             position: relative;
-            overflow-x: hidden;
+            background: linear-gradient(to bottom, #fef9f3, #f0f9ff);
         }
         
         .background-image {
@@ -40,15 +50,24 @@
             background-size: cover;
             background-position: center;
             opacity: 0.15;
-            z-index: -1;
+            z-index: 0;
         }
         
         .card {
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            padding-bottom: 100px;
+            position: relative;
+            z-index: 1;
         }
         
         .timeline-item {
@@ -91,6 +110,9 @@
             padding: 0.75rem 0;
             color: #8b5a2b;
             border-radius: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
         
         .nav-tab.active {
@@ -109,8 +131,12 @@
         }
         
         .day-selector {
+            display: flex;
+            overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            gap: 8px;
+            padding-bottom: 10px;
         }
         
         .day-selector::-webkit-scrollbar {
@@ -120,12 +146,22 @@
         .day-tab {
             transition: all 0.3s ease;
             white-space: nowrap;
+            padding: 8px 16px;
+            border: 1px solid #fbbf24;
+            border-radius: 20px;
+            background-color: white;
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            flex-shrink: 0;
         }
         
         .day-tab.active {
             background-color: #fef3c7;
             color: #92400e;
-            border-color: #fbbf24;
+            border-color: #f59e0b;
+            transform: scale(1.05);
         }
         
         .detail-timeline-item {
@@ -171,6 +207,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         
         .fade-enter-active, .fade-leave-active {
@@ -180,15 +217,55 @@
         .fade-enter-from, .fade-leave-to {
             opacity: 0;
         }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            z-index: 100;
+        }
+        
+        .bottom-nav .card {
+            display: flex;
+            padding: 8px;
+        }
+        
+        /* 自定義滾動條 */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #f59e0b;
+        }
+        
+        /* 進度條動畫 */
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-amber-50">
-    <div id="app" class="app-container bg-gradient-to-b from-amber-50 to-blue-50 relative">
+<body>
+    <div id="app" class="app-container">
         <!-- 背景圖片 -->
         <div class="background-image"></div>
         
         <!-- 主要內容區域 -->
-        <main class="p-5 pb-24">
+        <div class="main-content">
             <!-- 標題 -->
             <header class="mb-6 pt-4">
                 <h1 class="text-2xl font-bold text-center text-amber-900">首爾旅行助手</h1>
@@ -280,7 +357,7 @@
                             </div>
                             <div class="text-right">
                                 <div class="text-sm text-amber-700">數據來源：韓國氣象廳</div>
-                                <button @click="updateWeather" class="mt-2 text-sm bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center">
+                                <button @click="updateWeather" class="mt-2 text-sm bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center justify-center ml-auto">
                                     <span class="material-icons text-sm mr-1">refresh</span>
                                     更新數據
                                 </button>
@@ -343,12 +420,12 @@
                     
                     <!-- 日子選擇器 -->
                     <div class="mb-6">
-                        <div class="flex overflow-x-auto day-selector pb-2 space-x-2">
+                        <div class="day-selector custom-scrollbar">
                             <button 
                                 v-for="day in scheduleDetails" 
                                 :key="day.date"
                                 @click="selectDay(day.date)"
-                                class="day-tab px-4 py-2 border border-amber-200 rounded-full text-sm font-medium"
+                                class="day-tab"
                                 :class="{'active': selectedDay === day.date}"
                             >
                                 {{ day.date }}（{{ day.day }}）
@@ -419,7 +496,7 @@
                     <div class="mb-6">
                         <div class="text-amber-700 mb-2">已完成 {{ checkedCount }} / {{ foodList.length }}</div>
                         <div class="w-full bg-amber-100 rounded-full h-3">
-                            <div class="bg-amber-500 h-3 rounded-full" :style="{width: `${(checkedCount/foodList.length)*100}%`}"></div>
+                            <div class="progress-bar bg-amber-500 h-3 rounded-full" :style="{width: `${(checkedCount/foodList.length)*100}%`}"></div>
                         </div>
                     </div>
                     
@@ -442,6 +519,7 @@
                                             placeholder="添加備註..." 
                                             class="w-full p-2 border border-amber-200 rounded text-sm"
                                             rows="2"
+                                            @click.stop
                                         ></textarea>
                                     </div>
                                     
@@ -461,11 +539,11 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
         
         <!-- 底部導航 -->
-        <footer class="fixed bottom-0 left-0 right-0 max-w-480 mx-auto p-4">
-            <div class="card flex p-2">
+        <div class="bottom-nav">
+            <div class="card">
                 <button 
                     @click="currentPage = 'home'" 
                     class="nav-tab" 
@@ -502,11 +580,11 @@
                     <span class="text-xs mt-1">美食</span>
                 </button>
             </div>
-        </footer>
+        </div>
     </div>
 
     <script>
-        const { createApp, ref, computed } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
         
         createApp({
             setup() {
@@ -758,6 +836,14 @@
                     foodList.value[index].showNote = !foodList.value[index].showNote;
                 };
                 
+                // 初始化
+                onMounted(() => {
+                    // 設置默認選中的日子
+                    if (scheduleDetails.value.length > 0) {
+                        selectedDay.value = scheduleDetails.value[0].date;
+                    }
+                });
+                
                 return {
                     currentPage,
                     selectedDay,
@@ -772,13 +858,6 @@
                     openGoogleMap,
                     toggleFoodNote
                 };
-            },
-            
-            mounted() {
-                // 設置默認選中的日子
-                if (this.scheduleDetails.length > 0) {
-                    this.selectedDay = this.scheduleDetails[0].date;
-                }
             }
         }).mount('#app');
     </script>
