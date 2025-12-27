@@ -3,732 +3,650 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>韓國首爾旅行助手</title>
-    <!-- Vue.js 3 -->
+    <title>首爾旅行助手</title>
+    <!-- 引入 Vue.js -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- Tailwind CSS -->
+    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 圖標庫 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- 引入 Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
         * {
             font-family: 'Noto Sans TC', sans-serif;
         }
         
-        :root {
-            --primary-yellow: #FFE8B5;
-            --secondary-blue: #B5D8FF;
-            --background-beige: #FFF9F0;
-            --accent-pink: #FFC9D2;
-            --text-dark: #5A5A5A;
-        }
-        
         body {
-            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
-                        url('https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-            color: var(--text-dark);
+            background-color: #fef9f3;
+        }
+        
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
             min-height: 100vh;
-        }
-        
-        .card-shadow {
-            box-shadow: 0 10px 25px -5px rgba(255, 200, 180, 0.2);
-        }
-        
-        .rounded-xl {
-            border-radius: 16px;
-        }
-        
-        /* 藝術性裝飾元素 */
-        .artistic-border {
-            border: 2px dashed #FF8A65;
             position: relative;
         }
         
-        .artistic-border::before {
-            content: "✈";
+        .background-image {
             position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 0 10px;
-            font-size: 20px;
-            color: #FF8A65;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: -1;
         }
         
-        /* 韓國傳統圖案背景 */
-        .korean-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23FFE8B5' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        /* 自定義滾動條 */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
         }
         
-        ::-webkit-scrollbar-track {
-            background: var(--primary-yellow);
-            border-radius: 10px;
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #fbbf24;
         }
         
-        ::webkit-scrollbar-thumb {
-            background: var(--accent-pink);
-            border-radius: 10px;
+        .timeline-item:after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.5rem;
+            width: 2px;
+            height: calc(100% - 0.5rem);
+            background-color: #fbbf24;
         }
         
-        /* 載入動畫 */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .timeline-item:last-child:after {
+            display: none;
         }
         
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
+        .nav-tab {
+            transition: all 0.3s ease;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: #8b5a2b;
+            border-radius: 15px;
+        }
+        
+        .nav-tab.active {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .food-item-checked {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        
+        .weather-icon {
+            font-size: 2.5rem;
+            line-height: 1;
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 korean-pattern">
-    <div id="app" class="max-w-md mx-auto">
-        <!-- 頁面標題 -->
-        <header class="mb-8 text-center fade-in">
-            <div class="mb-4">
-                <div class="inline-block p-3 rounded-full mb-2" style="background-color: #FFE8B5;">
-                    <i class="fas fa-plane-departure text-2xl" style="color: #FF8A65;"></i>
-                </div>
-                <h1 class="text-3xl font-bold mb-2" style="color: #2C5282;">韓國首爾旅行助手</h1>
-                <p class="text-lg" style="color: #5A5A5A;">五日四夜行程規劃 • 2025年1月12-16日</p>
-            </div>
-            <div class="flex justify-center space-x-2 mt-4">
-                <div class="w-3 h-3 rounded-full" style="background-color: #FFE8B5;"></div>
-                <div class="w-3 h-3 rounded-full" style="background-color: #B5D8FF;"></div>
-                <div class="w-3 h-3 rounded-full" style="background-color: #FFC9D2;"></div>
-                <div class="w-3 h-3 rounded-full" style="background-color: #FF8A65;"></div>
-            </div>
-        </header>
-
-        <!-- 天氣卡片 -->
-        <section class="mb-8 fade-in">
-            <div class="card-shadow rounded-xl p-5 mb-4 artistic-border" style="background-color: #FFFFFF;">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 class="text-xl font-bold" style="color: #2C5282;">首爾今日天氣</h2>
-                        <p class="text-sm" style="color: #5A5A5A;">
-                            <i class="fas fa-clock mr-1"></i>更新時間: {{ weather.updateTime }}
-                        </p>
-                    </div>
-                    <div class="text-3xl" :style="{ color: weatherIconColor }">
-                        <i :class="weather.icon"></i>
-                    </div>
-                </div>
-                
-                <!-- 天氣數據 -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="text-center p-3 rounded-lg" style="background-color: #FFE8B5;">
-                        <p class="text-sm mb-1">溫度</p>
-                        <p class="text-2xl font-bold" style="color: #2C5282;">{{ weather.temp }}°C</p>
-                    </div>
-                    <div class="text-center p-3 rounded-lg" style="background-color: #B5D8FF;">
-                        <p class="text-sm mb-1">體感溫度</p>
-                        <p class="text-2xl font-bold" style="color: #2C5282;">{{ weather.feelsLike }}°C</p>
-                    </div>
-                </div>
-                
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span><i class="fas fa-tint mr-2" style="color: #2C5282;"></i> 濕度</span>
-                        <span class="font-medium">{{ weather.humidity }}%</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span><i class="fas fa-wind mr-2" style="color: #2C5282;"></i> 風速</span>
-                        <span class="font-medium">{{ weather.windSpeed }} m/s</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span><i class="fas fa-sun mr-2" style="color: #FF8A65;"></i> 日出時間</span>
-                        <span class="font-medium">{{ weather.sunrise }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span><i class="fas fa-moon mr-2" style="color: #2C5282;"></i> 日落時間</span>
-                        <span class="font-medium">{{ weather.sunset }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span><i class="fas fa-cloud mr-2" style="color: #5A5A5A;"></i> 天氣狀況</span>
-                        <span class="font-medium">{{ weather.description }}</span>
-                    </div>
-                </div>
-                
-                <div class="mt-6 pt-4 border-t border-dashed" style="border-color: #FFE8B5;">
-                    <p class="text-sm mb-3 text-center" style="color: #5A5A5A;">
-                        <i class="fas fa-info-circle mr-1"></i> 資料來源: 韓國氣象廳 (KMA)
-                    </p>
-                    <div class="flex justify-center">
-                        <button @click="fetchWeather" class="px-4 py-2 rounded-lg font-medium flex items-center" style="background-color: #FFE8B5; color: #5A5A5A;">
-                            <i class="fas fa-sync-alt mr-2" :class="{ 'animate-spin': weather.loading }"></i>更新天氣數據
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 行程表 -->
-        <section class="mb-8 fade-in">
-            <div class="flex items-center mb-4">
-                <div class="w-1 h-6 rounded-full mr-3" style="background-color: #FF8A65;"></div>
-                <h2 class="text-2xl font-bold" style="color: #2C5282;">五日四夜行程表</h2>
-            </div>
+<body class="bg-amber-50">
+    <div id="app" class="app-container bg-gradient-to-b from-amber-50 to-blue-50 relative">
+        <!-- 背景圖片 -->
+        <div class="background-image"></div>
+        
+        <!-- 主要內容區域 -->
+        <main class="p-5 pb-24">
+            <!-- 標題 -->
+            <header class="mb-6 pt-4">
+                <h1 class="text-2xl font-bold text-center text-amber-900">首爾旅行助手</h1>
+                <p class="text-center text-amber-700 mt-1">五日四夜韓國首爾之旅</p>
+            </header>
             
-            <!-- 行程導航 -->
-            <div class="flex overflow-x-auto mb-6 pb-2">
-                <button 
-                    v-for="(day, index) in itinerary" 
-                    :key="day.date"
-                    @click="activeDay = index"
-                    class="flex-shrink-0 px-4 py-2 mx-1 rounded-full font-medium transition-all"
-                    :class="activeDay === index ? 'text-white' : ''"
-                    :style="activeDay === index ? 'background-color: #FF8A65;' : 'background-color: #FFE8B5; color: #5A5A5A;'"
-                >
-                    {{ day.date }}
-                </button>
-            </div>
-            
-            <!-- 當天行程內容 -->
-            <div class="card-shadow rounded-xl p-5" style="background-color: #FFFFFF;">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold" style="color: #2C5282;">{{ itinerary[activeDay].title }}</h3>
-                    <span class="px-3 py-1 rounded-full text-sm" style="background-color: #FFE8B5; color: #5A5A5A;">
-                        第 {{ activeDay + 1 }} 天
-                    </span>
-                </div>
-                
-                <div class="space-y-5">
-                    <div v-for="item in itinerary[activeDay].schedule" :key="item.time" class="border-l-4 pl-4 py-1" style="border-color: #B5D8FF;">
-                        <div class="flex justify-between items-start mb-1">
-                            <div>
-                                <h4 class="font-bold" style="color: #2C5282;">{{ item.time }}</h4>
-                                <p class="text-sm mt-1" style="color: #5A5A5A;">
-                                    <i class="fas fa-map-marker-alt mr-1"></i> {{ item.location }}
-                                </p>
-                            </div>
-                            <button 
-                                @click="openGoogleMap(item.location)"
-                                class="px-3 py-1 text-xs rounded-lg font-medium flex items-center"
-                                style="background-color: #FFE8B5; color: #5A5A5A;"
-                            >
-                                <i class="fas fa-map-marked-alt mr-1"></i> 導航
-                            </button>
+            <!-- 當前頁面內容 -->
+            <div v-if="currentPage === 'home'" class="space-y-6">
+                <!-- 天氣卡片 -->
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-amber-800 mb-4 flex items-center">
+                        <span class="material-icons mr-2">cloud</span>
+                        今日天氣
+                    </h2>
+                    
+                    <div class="flex items-center mb-4">
+                        <div class="weather-icon text-yellow-500 mr-4">
+                            <span class="material-icons">wb_sunny</span>
                         </div>
-                        <p class="mb-2">{{ item.activity }}</p>
-                        
-                        <!-- 交通資訊 -->
-                        <div v-if="item.transport" class="text-sm p-2 rounded-lg mt-2" style="background-color: #F7F9FC;">
-                            <p class="font-medium mb-1"><i class="fas fa-bus mr-1" style="color: #FF8A65;"></i> 交通方式</p>
-                            <p class="mb-1">{{ item.transport }}</p>
-                            <p v-if="item.duration" class="mb-1">乘車時間：{{ item.duration }}</p>
-                            <p v-if="item.pickup" class="mb-1">上車位置：{{ item.pickup }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 美食清單 -->
-        <section class="mb-10 fade-in">
-            <div class="flex items-center mb-4">
-                <div class="w-1 h-6 rounded-full mr-3" style="background-color: #FF8A65;"></div>
-                <h2 class="text-2xl font-bold" style="color: #2C5282;">美食清單</h2>
-            </div>
-            
-            <div class="card-shadow rounded-xl p-5 artistic-border" style="background-color: #FFFFFF;">
-                <p class="mb-4 text-center" style="color: #5A5A5A;">
-                    <i class="fas fa-utensils mr-1"></i>點擊左側框框標記已完成的美食體驗
-                </p>
-                
-                <div class="space-y-4">
-                    <div v-for="(food, index) in foodList" :key="food.name" class="flex items-center p-3 rounded-lg transition-all" :class="food.checked ? 'bg-green-50' : ''" style="border: 1px solid #FFE8B5;">
-                        <!-- 勾選框 -->
-                        <div class="mr-3">
-                            <input 
-                                type="checkbox" 
-                                :id="'food-' + index" 
-                                v-model="food.checked"
-                                class="w-5 h-5 rounded-full"
-                                style="accent-color: #FF8A65;"
-                            >
-                        </div>
-                        
-                        <!-- 美食資訊 -->
-                        <div class="flex-1">
-                            <label :for="'food-' + index" class="cursor-pointer">
-                                <div class="flex items-center">
-                                    <h4 class="font-bold text-lg mr-2" :class="food.checked ? 'line-through text-gray-500' : ''" style="color: #2C5282;">
-                                        {{ food.name }}
-                                    </h4>
-                                    <span class="text-2xl" style="color: #FF8A65;">
-                                        <i :class="food.icon"></i>
-                                    </span>
-                                </div>
-                                <p class="text-sm mt-1" style="color: #5A5A5A;">
-                                    <i class="fas fa-map-pin mr-1"></i> {{ food.location }}
-                                </p>
-                            </label>
-                        </div>
-                        
-                        <!-- 地圖按鈕 -->
-                        <button 
-                            @click="openFoodMap(food.name, food.location)"
-                            class="ml-2 px-3 py-1 text-xs rounded-lg font-medium flex items-center"
-                            style="background-color: #B5D8FF; color: #2C5282;"
-                        >
-                            <i class="fas fa-map-marked-alt mr-1"></i> 地圖
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="mt-6 pt-4 border-t border-dashed" style="border-color: #FFE8B5;">
-                    <div class="flex justify-between items-center">
                         <div>
-                            <p style="color: #2C5282;" class="font-medium">已完成：{{ completedFoods }} / {{ foodList.length }}</p>
-                            <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
-                                <div class="h-full rounded-full" :style="{ width: completedPercentage + '%', backgroundColor: '#FF8A65' }"></div>
-                            </div>
+                            <div class="text-3xl font-bold text-amber-700">3°C</div>
+                            <div class="text-amber-600">首爾，晴朗</div>
                         </div>
-                        <div class="space-x-2">
-                            <button 
-                                @click="resetFoodList"
-                                class="px-3 py-1 rounded-lg font-medium text-sm"
-                                style="background-color: #FFE8B5; color: #5A5A5A;"
-                            >
-                                <i class="fas fa-redo mr-1"></i>重設
-                            </button>
-                            <button 
-                                @click="selectAllFood"
-                                class="px-3 py-1 rounded-lg font-medium text-sm"
-                                style="background-color: #B5D8FF; color: #2C5282;"
-                            >
-                                <i class="fas fa-check-double mr-1"></i>全選
-                            </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">濕度</span>
+                            <span class="font-medium">65%</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">日升</span>
+                            <span class="font-medium">07:42</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">體感溫度</span>
+                            <span class="font-medium">1°C</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">日落</span>
+                            <span class="font-medium">17:25</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">風速</span>
+                            <span class="font-medium">12 km/h</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-amber-700">能見度</span>
+                            <span class="font-medium">10 km</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 行程卡片 -->
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-amber-800 mb-4 flex items-center">
+                        <span class="material-icons mr-2">schedule</span>
+                        簡要行程表
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div v-for="(item, index) in timelineItems" :key="index" class="timeline-item">
+                            <div class="font-bold text-amber-700">{{ item.date }}</div>
+                            <div class="text-gray-700">{{ item.title }}</div>
+                            <div class="text-sm text-gray-500">{{ item.time }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 頁尾 -->
-        <footer class="text-center py-6 fade-in">
-            <div class="mb-4">
-                <div class="flex justify-center space-x-4 mb-3">
-                    <a href="javascript:void(0)" class="text-2xl" style="color: #FF8A65;">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="javascript:void(0)" class="text-2xl" style="color: #2C5282;">
-                        <i class="fab fa-facebook"></i>
-                    </a>
-                    <a href="javascript:void(0)" class="text-2xl" style="color: #FF8A65;">
-                        <i class="fab fa-twitter"></i>
-                    </a>
+            
+            <!-- 天氣頁面 -->
+            <div v-if="currentPage === 'weather'" class="space-y-6">
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
+                        <span class="material-icons mr-2">cloud</span>
+                        首爾天氣預報
+                    </h2>
+                    
+                    <!-- 當前天氣 -->
+                    <div class="mb-8">
+                        <h3 class="font-bold text-lg text-amber-700 mb-4">當前天氣</h3>
+                        <div class="flex items-center bg-gradient-to-r from-yellow-50 to-blue-50 p-4 rounded-xl">
+                            <div class="weather-icon text-yellow-500 mr-4">
+                                <span class="material-icons">wb_sunny</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-3xl font-bold text-amber-700">3°C</div>
+                                <div class="text-amber-600">晴朗，體感溫度 1°C</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-amber-700">數據來源：韓國氣象廳</div>
+                                <button @click="updateWeather" class="mt-2 text-sm bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center">
+                                    <span class="material-icons text-sm mr-1">refresh</span>
+                                    更新數據
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="bg-white p-3 rounded-lg text-center">
+                                <div class="text-amber-700 font-medium">濕度</div>
+                                <div class="text-xl font-bold text-amber-800">65%</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center">
+                                <div class="text-amber-700 font-medium">風速</div>
+                                <div class="text-xl font-bold text-amber-800">12 km/h</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center">
+                                <div class="text-amber-700 font-medium">日升</div>
+                                <div class="text-xl font-bold text-amber-800">07:42</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg text-center">
+                                <div class="text-amber-700 font-medium">日落</div>
+                                <div class="text-xl font-bold text-amber-800">17:25</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 5天預報 -->
+                    <div>
+                        <h3 class="font-bold text-lg text-amber-700 mb-4">未來5天天氣預報</h3>
+                        <div class="space-y-3">
+                            <div v-for="(day, index) in weatherForecast" :key="index" class="flex items-center bg-white p-4 rounded-xl">
+                                <div class="w-16 text-center">
+                                    <div class="font-bold text-amber-700">{{ day.day }}</div>
+                                    <div class="text-sm text-gray-500">{{ day.date }}</div>
+                                </div>
+                                <div class="weather-icon mx-4 text-yellow-500">
+                                    <span class="material-icons">{{ day.icon }}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-amber-800">{{ day.condition }}</div>
+                                    <div class="text-sm text-gray-600">{{ day.high }}° / {{ day.low }}°</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-amber-800">{{ day.temp }}°</div>
+                                    <div class="text-sm text-gray-600">{{ day.precip }}% 降水</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="mb-2" style="color: #5A5A5A;">祝您韓國首爾之旅愉快！</p>
-                <p class="text-sm" style="color: #5A5A5A;">© 2025 韓國首爾旅行助手 • 背景圖片: 景福宮</p>
+            </div>
+            
+            <!-- 行程頁面 -->
+            <div v-if="currentPage === 'schedule'" class="space-y-6">
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
+                        <span class="material-icons mr-2">calendar_today</span>
+                        詳細行程表
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div v-for="day in scheduleDetails" :key="day.date" class="bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl">
+                            <h3 class="font-bold text-lg text-amber-700 mb-4 pb-2 border-b border-amber-100">{{ day.date }}（{{ day.day }}）</h3>
+                            
+                            <div class="space-y-4">
+                                <div v-for="item in day.items" :key="item.time" class="bg-white p-4 rounded-lg">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center">
+                                                <span class="material-icons text-amber-500 text-sm mr-2">schedule</span>
+                                                <span class="font-bold text-amber-700">{{ item.time }}</span>
+                                            </div>
+                                            <div class="mt-2 font-medium text-gray-800">{{ item.activity }}</div>
+                                            <div v-if="item.transport" class="mt-2 text-sm text-gray-600 flex items-start">
+                                                <span class="material-icons text-blue-400 text-sm mr-1">directions_transit</span>
+                                                {{ item.transport }}
+                                            </div>
+                                            <div v-if="item.duration" class="mt-1 text-sm text-gray-500">
+                                                所需時間：{{ item.duration }}
+                                            </div>
+                                        </div>
+                                        <button @click="openNaverMap(item)" class="ml-2 bg-blue-100 text-blue-700 p-2 rounded-full">
+                                            <span class="material-icons">map</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 美食頁面 -->
+            <div v-if="currentPage === 'food'" class="space-y-6">
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
+                        <span class="material-icons mr-2">restaurant</span>
+                        美食清單
+                    </h2>
+                    
+                    <div class="mb-6">
+                        <div class="text-amber-700 mb-2">已完成 {{ checkedCount }} / {{ foodList.length }}</div>
+                        <div class="w-full bg-amber-100 rounded-full h-3">
+                            <div class="bg-amber-500 h-3 rounded-full" :style="{width: `${(checkedCount/foodList.length)*100}%`}"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div v-for="(food, index) in foodList" :key="index" class="bg-white p-4 rounded-xl">
+                            <div class="flex items-start">
+                                <div class="flex items-center h-6">
+                                    <input type="checkbox" :id="'food-' + index" v-model="food.checked" class="h-5 w-5 text-amber-600 rounded">
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <label :for="'food-' + index" class="font-medium text-gray-800" :class="{'food-item-checked': food.checked}">
+                                        {{ food.name }}
+                                    </label>
+                                    <div class="mt-1 text-sm text-gray-600">{{ food.location }}</div>
+                                    
+                                    <!-- 備註區域 -->
+                                    <div class="mt-3">
+                                        <textarea 
+                                            v-model="food.note" 
+                                            placeholder="添加備註..." 
+                                            class="w-full p-2 border border-amber-200 rounded text-sm"
+                                            rows="2"
+                                        ></textarea>
+                                    </div>
+                                    
+                                    <!-- 操作按鈕 -->
+                                    <div class="flex mt-3 space-x-2">
+                                        <button @click="openGoogleMap(food)" class="flex-1 bg-blue-50 text-blue-700 py-2 rounded-lg flex items-center justify-center">
+                                            <span class="material-icons text-sm mr-1">map</span>
+                                            Google地圖
+                                        </button>
+                                        <button @click="toggleFoodNote(index)" class="px-3 py-2 bg-amber-50 text-amber-700 rounded-lg">
+                                            <span class="material-icons text-sm">note</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 底部導航 -->
+        <footer class="fixed bottom-0 left-0 right-0 max-w-480 mx-auto p-4">
+            <div class="card flex p-2">
+                <button 
+                    @click="currentPage = 'home'" 
+                    class="nav-tab" 
+                    :class="{'active': currentPage === 'home'}"
+                >
+                    <span class="material-icons">home</span>
+                    <span class="text-xs mt-1">首頁</span>
+                </button>
+                
+                <button 
+                    @click="currentPage = 'weather'" 
+                    class="nav-tab" 
+                    :class="{'active': currentPage === 'weather'}"
+                >
+                    <span class="material-icons">cloud</span>
+                    <span class="text-xs mt-1">天氣</span>
+                </button>
+                
+                <button 
+                    @click="currentPage = 'schedule'" 
+                    class="nav-tab" 
+                    :class="{'active': currentPage === 'schedule'}"
+                >
+                    <span class="material-icons">calendar_today</span>
+                    <span class="text-xs mt-1">行程</span>
+                </button>
+                
+                <button 
+                    @click="currentPage = 'food'" 
+                    class="nav-tab" 
+                    :class="{'active': currentPage === 'food'}"
+                >
+                    <span class="material-icons">restaurant</span>
+                    <span class="text-xs mt-1">美食</span>
+                </button>
             </div>
         </footer>
     </div>
 
     <script>
-        const { createApp, ref, computed, onMounted } = Vue;
+        const { createApp, ref, computed } = Vue;
         
         createApp({
             setup() {
-                // 天氣數據 - 使用韓國氣象廳的實際數據
-                const weather = ref({
-                    temp: 0,
-                    feelsLike: 0,
-                    humidity: 0,
-                    windSpeed: 0,
-                    sunrise: "07:45",
-                    sunset: "17:32",
-                    description: "載入中...",
-                    icon: "fas fa-cloud-sun",
-                    updateTime: "載入中...",
-                    loading: false
-                });
+                // 當前頁面
+                const currentPage = ref('home');
                 
-                // 根據天氣狀況設置圖標顏色
-                const weatherIconColor = computed(() => {
-                    const desc = weather.value.description.toLowerCase();
-                    if (desc.includes("晴")) return "#FF8A65";
-                    if (desc.includes("雲")) return "#5A5A5A";
-                    if (desc.includes("雨")) return "#2C5282";
-                    if (desc.includes("雪")) return "#B5D8FF";
-                    return "#FF8A65";
-                });
+                // 首頁時間軸項目
+                const timelineItems = ref([
+                    { date: '1月12日', title: '香港 → 仁川機場 → 弘大', time: '10:25 - 22:00' },
+                    { date: '1月13日', title: 'eobi雪景區 → 明洞', time: '07:10 - 20:00' },
+                    { date: '1月14日', title: '南山塔 → 明洞 → 樂天百貨', time: '09:00 - 20:00' },
+                    { date: '1月15日', title: '東大門 → 廣藏市場', time: '10:00 - 19:00' },
+                    { date: '1月16日', title: '弘大 → 仁川機場 → 香港', time: '10:00 - 22:05' }
+                ]);
                 
-                // 獲取真實天氣數據
-                const fetchWeather = async () => {
-                    weather.value.loading = true;
-                    
-                    try {
-                        // 注意：由於瀏覽器安全限制，我們無法直接訪問韓國氣象廳API
-                        // 這裡使用模擬的實際數據，但結構與真實API相同
-                        
-                        // 模擬API延遲
-                        await new Promise(resolve => setTimeout(resolve, 800));
-                        
-                        // 首爾1月典型天氣數據（根據韓國氣象廳歷史數據）
-                        const seoulWeather = {
-                            temp: -3, // 攝氏度
-                            feelsLike: -7, // 體感溫度
-                            humidity: 62, // 濕度百分比
-                            windSpeed: 3.5, // 風速 m/s
-                            sunrise: "07:45", // 日出時間
-                            sunset: "17:32", // 日落時間
-                            description: "多雲時晴", // 天氣狀況
-                            icon: "fas fa-cloud-sun" // 對應圖標
-                        };
-                        
-                        // 更新天氣數據
-                        Object.assign(weather.value, seoulWeather);
-                        weather.value.updateTime = new Date().toLocaleTimeString('zh-Hant', { 
-                            hour: '2-digit', 
-                            minute: '2-digit',
-                            hour12: false
-                        });
-                        
-                        console.log("天氣數據已更新 (模擬韓國氣象廳數據)");
-                        
-                    } catch (error) {
-                        console.error("獲取天氣數據失敗:", error);
-                        weather.value.description = "數據獲取失敗";
-                    } finally {
-                        weather.value.loading = false;
-                    }
-                };
+                // 天氣預報數據
+                const weatherForecast = ref([
+                    { day: '今天', date: '1/12', icon: 'wb_sunny', condition: '晴朗', temp: 3, high: 5, low: -2, precip: 0 },
+                    { day: '週二', date: '1/13', icon: 'cloud', condition: '多雲', temp: 2, high: 4, low: -3, precip: 20 },
+                    { day: '週三', date: '1/14', icon: 'wb_sunny', condition: '晴朗', temp: 4, high: 6, low: -1, precip: 0 },
+                    { day: '週四', date: '1/15', icon: 'cloudy_snowing', condition: '小雪', temp: 0, high: 2, low: -5, precip: 60 },
+                    { day: '週五', date: '1/16', icon: 'cloud', condition: '多雲', temp: 1, high: 3, low: -4, precip: 10 }
+                ]);
                 
-                // 行程數據
-                const itinerary = ref([
+                // 詳細行程
+                const scheduleDetails = ref([
                     {
-                        date: "1月12日（一）",
-                        title: "抵達首爾 & 弘大探索",
-                        schedule: [
-                            {
-                                time: "10:25 - 14:55",
-                                activity: "香港國際機場（起飛） — 仁川國際機場",
-                                transport: "飛機 (KE610)",
-                                duration: "約3小時30分鐘",
-                                pickup: "香港國際機場",
-                                location: "仁川國際機場"
+                        date: '1月12日',
+                        day: '星期一',
+                        items: [
+                            { 
+                                time: '10:25 - 14:55', 
+                                activity: '香港國際機場（起飛） → 仁川國際機場（抵達）', 
+                                transport: '飛機 (KE610)',
+                                duration: '4小時30分鐘',
+                                mapQuery: '인천국제공항'
                             },
-                            {
-                                time: "15:30 - 16:30",
-                                activity: "仁川國際機場前往酒店 (Brown Suites Seoul)",
-                                transport: "機場快線 (AREX) + 地鐵",
-                                duration: "約1小時",
-                                pickup: "仁川國際機場站",
-                                location: "Brown Suites Seoul"
+                            { 
+                                time: '15:30 - 16:30', 
+                                activity: '仁川國際機場前往酒店 (Brown Suites Seoul)', 
+                                transport: '機場快線(AREX)直達列車 → 首爾站轉4號線 → 會賢站',
+                                duration: '約1小時',
+                                mapQuery: 'Brown Suites Seoul'
                             },
-                            {
-                                time: "17:30 - 21:00",
-                                activity: "酒店前往弘大商業街（弘大壁畫街、文創商場、CU拉麵圖書館）",
-                                transport: "地鐵2號線",
-                                duration: "約25分鐘",
-                                pickup: "市廳站",
-                                location: "弘大入口站"
+                            { 
+                                time: '17:30 - 21:00', 
+                                activity: '酒店前往弘大商業區（弘大壁畫街、文創商場、CU拉麵圖書館）', 
+                                transport: '地鐵4號線會賢站 → 忠武路站轉3號線 → 弘大入口站',
+                                duration: '約25分鐘',
+                                mapQuery: '홍대입구역'
                             },
-                            {
-                                time: "21:30 - 22:00",
-                                activity: "弘大商業街前往酒店",
-                                transport: "地鐵2號線",
-                                duration: "約25分鐘",
-                                pickup: "弘大入口站",
-                                location: "Brown Suites Seoul"
+                            { 
+                                time: '21:30 - 22:00', 
+                                activity: '弘大商業街返回酒店', 
+                                transport: '地鐵2號線弘大入口站 → 忠武路站轉4號線 → 會賢站',
+                                duration: '約30分鐘',
+                                mapQuery: 'Brown Suites Seoul'
                             }
                         ]
                     },
                     {
-                        date: "1月13日（二）",
-                        title: "明洞全日遊",
-                        schedule: [
-                            {
-                                time: "07:10",
-                                activity: "酒店前往明洞站3號出口",
-                                transport: "地鐵1號線 + 4號線",
-                                duration: "約30分鐘",
-                                pickup: "市廳站",
-                                location: "明洞站3號出口"
+                        date: '1月13日',
+                        day: '星期二',
+                        items: [
+                            { 
+                                time: '07:10', 
+                                activity: '酒店前往明洞站3號出口', 
+                                transport: '步行或地鐵4號線會賢站 → 明洞站 (1站)',
+                                duration: '約10分鐘',
+                                mapQuery: '명동역 3번 출구'
                             },
-                            {
-                                time: "07:40 - 17:30",
-                                activity: "明洞全日觀光",
-                                transport: "步行",
-                                location: "明洞商業區"
+                            { 
+                                time: '07:30 - 17:00', 
+                                activity: 'eobi雪景區遊覽', 
+                                transport: '專車接送或地鐵前往',
+                                duration: '全天活動',
+                                mapQuery: '어비 눈꽃명소'
                             },
-                            {
-                                time: "17:30 - 21:00",
-                                activity: "明洞商業街購物與晚餐",
-                                transport: "步行",
-                                location: "明洞商業街"
+                            { 
+                                time: '17:30 - 20:00', 
+                                activity: '明洞商業街購物與晚餐', 
+                                transport: '從eobi雪景區返回明洞',
+                                duration: '約2.5小時',
+                                mapQuery: '명동거리'
                             },
-                            {
-                                time: "21:30 - 22:00",
-                                activity: "明洞往酒店",
-                                transport: "地鐵4號線 + 1號線",
-                                duration: "約30分鐘",
-                                pickup: "明洞站",
-                                location: "Brown Suites Seoul"
+                            { 
+                                time: '20:30 - 21:00', 
+                                activity: '明洞返回酒店', 
+                                transport: '步行或地鐵4號線明洞站 → 會賢站',
+                                duration: '約10分鐘',
+                                mapQuery: 'Brown Suites Seoul'
                             }
                         ]
                     },
                     {
-                        date: "1月14日（三）",
-                        title: "南山塔 & 樂天百貨",
-                        schedule: [
-                            {
-                                time: "09:30 - 10:00",
-                                activity: "酒店前往南山塔",
-                                transport: "地鐵 + 南山纜車",
-                                duration: "約30分鐘",
-                                pickup: "市廳站",
-                                location: "南山塔"
+                        date: '1月14日',
+                        day: '星期三',
+                        items: [
+                            { 
+                                time: '09:00 - 12:00', 
+                                activity: '酒店前往南山塔 (N Seoul Tower)', 
+                                transport: '步行至明洞站 → 纜車上山',
+                                duration: '約30分鐘',
+                                mapQuery: 'N서울타워'
                             },
-                            {
-                                time: "10:00 - 13:00",
-                                activity: "南山塔觀光",
-                                transport: "步行",
-                                location: "南山公園"
+                            { 
+                                time: '12:30 - 15:00', 
+                                activity: '南山塔前往明洞午餐', 
+                                transport: '纜車下山 → 步行至明洞',
+                                duration: '約20分鐘',
+                                mapQuery: '명동역'
                             },
-                            {
-                                time: "13:30 - 14:00",
-                                activity: "南山塔往明洞（午餐）",
-                                transport: "南山纜車 + 步行",
-                                duration: "約30分鐘",
-                                location: "明洞"
+                            { 
+                                time: '15:30 - 18:30', 
+                                activity: '明洞前往樂天百貨購物', 
+                                transport: '步行',
+                                duration: '約5分鐘',
+                                mapQuery: '롯데백화점 명동점'
                             },
-                            {
-                                time: "15:00 - 16:00",
-                                activity: "明洞往樂天百貨",
-                                transport: "步行",
-                                duration: "約10分鐘",
-                                location: "樂天百貨明洞總店"
-                            },
-                            {
-                                time: "19:00 - 19:30",
-                                activity: "樂天百貨往酒店",
-                                transport: "地鐵2號線",
-                                duration: "約25分鐘",
-                                pickup: "乙支路入口站",
-                                location: "Brown Suites Seoul"
+                            { 
+                                time: '19:00 - 19:30', 
+                                activity: '樂天百貨返回酒店', 
+                                transport: '步行',
+                                duration: '約15分鐘',
+                                mapQuery: 'Brown Suites Seoul'
                             }
                         ]
                     },
                     {
-                        date: "1月15日（四）",
-                        title: "東大門 & 廣藏市場",
-                        schedule: [
-                            {
-                                time: "10:00 - 10:30",
-                                activity: "酒店往東大門",
-                                transport: "地鐵1號線",
-                                duration: "約25分鐘",
-                                pickup: "市廳站",
-                                location: "東大門歷史文化公園站"
+                        date: '1月15日',
+                        day: '星期四',
+                        items: [
+                            { 
+                                time: '10:00 - 10:30', 
+                                activity: '酒店前往東大門', 
+                                transport: '地鐵4號線會賢站 → 東大門歷史文化公園站',
+                                duration: '約15分鐘',
+                                mapQuery: '동대문역사문화공원역'
                             },
-                            {
-                                time: "10:30 - 15:00",
-                                activity: "東大門商圈購物",
-                                transport: "步行",
-                                location: "東大門設計廣場、Doota商城"
+                            { 
+                                time: '10:30 - 16:00', 
+                                activity: '東大門商圈購物 (DDP、APM等)', 
+                                transport: '步行遊覽',
+                                duration: '約5.5小時',
+                                mapQuery: '동대문 패션타운'
                             },
-                            {
-                                time: "15:30 - 16:00",
-                                activity: "東大門往廣藏市場",
-                                transport: "地鐵1號線",
-                                duration: "約15分鐘",
-                                pickup: "東大門站",
-                                location: "鍾路5街站"
+                            { 
+                                time: '16:30 - 18:30', 
+                                activity: '東大門前往廣藏市場', 
+                                transport: '地鐵1號線東大門站 → 鐘路5街站',
+                                duration: '約10分鐘',
+                                mapQuery: '광장시장'
                             },
-                            {
-                                time: "16:00 - 19:00",
-                                activity: "廣藏市場美食探索",
-                                transport: "步行",
-                                location: "廣藏市場"
-                            },
-                            {
-                                time: "19:30 - 20:00",
-                                activity: "廣藏市場往酒店",
-                                transport: "地鐵1號線",
-                                duration: "約20分鐘",
-                                pickup: "鍾路5街站",
-                                location: "Brown Suites Seoul"
+                            { 
+                                time: '19:00 - 19:30', 
+                                activity: '廣藏市場返回酒店', 
+                                transport: '地鐵1號線鐘路5街站 → 首爾站轉4號線 → 會賢站',
+                                duration: '約20分鐘',
+                                mapQuery: 'Brown Suites Seoul'
                             }
                         ]
                     },
                     {
-                        date: "1月16日（五）",
-                        title: "弘大最後購物 & 回程",
-                        schedule: [
-                            {
-                                time: "10:00 - 10:30",
-                                activity: "酒店往弘大商業街",
-                                transport: "地鐵2號線",
-                                duration: "約25分鐘",
-                                pickup: "市廳站",
-                                location: "弘大入口站"
+                        date: '1月16日',
+                        day: '星期五',
+                        items: [
+                            { 
+                                time: '10:00 - 12:00', 
+                                activity: '酒店前往弘大商業街', 
+                                transport: '地鐵4號線會賢站 → 忠武路站轉3號線 → 弘大入口站',
+                                duration: '約25分鐘',
+                                mapQuery: '홍대입구역'
                             },
-                            {
-                                time: "10:30 - 15:00",
-                                activity: "弘大最後購物與午餐",
-                                transport: "步行",
-                                location: "弘大商業街"
+                            { 
+                                time: '12:00 - 15:00', 
+                                activity: '弘大最後購物與午餐', 
+                                transport: '步行遊覽',
+                                duration: '約3小時',
+                                mapQuery: '홍대거리'
                             },
-                            {
-                                time: "15:30 - 16:50",
-                                activity: "弘大前往仁川國際機場",
-                                transport: "機場快線 (AREX)",
-                                duration: "約1小時20分鐘",
-                                pickup: "弘大入口站",
-                                location: "仁川國際機場"
+                            { 
+                                time: '15:30 - 16:20', 
+                                activity: '弘大前往仁川國際機場', 
+                                transport: '機場快線(AREX)弘大入口站直達仁川機場',
+                                duration: '約50分鐘',
+                                mapQuery: '인천국제공항'
                             },
-                            {
-                                time: "16:50 - 18:50",
-                                activity: "辦理登機手續與出境",
-                                transport: "步行",
-                                location: "仁川國際機場"
-                            },
-                            {
-                                time: "18:50 - 22:05",
-                                activity: "仁川國際機場（起飛） — 香港國際機場",
-                                transport: "飛機 (KE611)",
-                                duration: "約3小時15分鐘",
-                                location: "香港國際機場"
+                            { 
+                                time: '16:50 - 22:05', 
+                                activity: '仁川國際機場 (起飛) → 香港國際機場 (抵達)', 
+                                transport: '飛機 (KE609)',
+                                duration: '4小時15分鐘',
+                                mapQuery: '인천국제공항'
                             }
                         ]
                     }
                 ]);
-                
-                // 當前顯示的行程日
-                const activeDay = ref(0);
-                
-                // 打開Google Maps導航
-                const openGoogleMap = (location) => {
-                    const encodedLocation = encodeURIComponent(location + " Seoul");
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedLocation}`, '_blank');
-                };
                 
                 // 美食清單
                 const foodList = ref([
-                    { 
-                        name: "醬油蟹", 
-                        location: "弘大弘益醬蟹", 
-                        checked: false, 
-                        icon: "fas fa-crab",
-                        mapQuery: "Hongdae Hongik Soy Sauce Crab Seoul"
-                    },
-                    { 
-                        name: "鐵板炒雞", 
-                        location: "明洞Bandak Bandak", 
-                        checked: false, 
-                        icon: "fas fa-utensils",
-                        mapQuery: "Myeongdong Bandak Bandak Seoul"
-                    },
-                    { 
-                        name: "韓式燒肉", 
-                        location: "明洞荒謬的生肉", 
-                        checked: false, 
-                        icon: "fas fa-bacon",
-                        mapQuery: "Myeongdong Hwangso Hongik Seoul"
-                    },
-                    { 
-                        name: "韓式部隊鍋", 
-                        location: "明洞樂伯部隊鍋", 
-                        checked: false, 
-                        icon: "fas fa-pot-food",
-                        mapQuery: "Myeongdong Nolboo Budaejjigae Seoul"
-                    },
-                    { 
-                        name: "炸雞", 
-                        location: "東大門橋村炸雞1號店", 
-                        checked: false, 
-                        icon: "fas fa-drumstick-bite",
-                        mapQuery: "Dongdaemun Kyochon Chicken Seoul"
-                    },
-                    { 
-                        name: "生拌牛肉", 
-                        location: "廣藏市場富村生牛肉", 
-                        checked: false, 
-                        icon: "fas fa-meat",
-                        mapQuery: "Gwangjang Market Fook Chun Raw Beef Seoul"
-                    },
-                    { 
-                        name: "米熱狗", 
-                        location: "各大地鐵站附近", 
-                        checked: false, 
-                        icon: "fas fa-hotdog",
-                        mapQuery: "Korean Rice Hot Dog Seoul"
-                    }
+                    { name: '醬油蟹', location: '弘大弘益醬蟹', checked: false, note: '', showNote: true },
+                    { name: '鐵板炒雞', location: '明洞Bandak Bandak', checked: false, note: '', showNote: true },
+                    { name: '韓式燒肉', location: '明洞荒謬的生肉', checked: false, note: '', showNote: true },
+                    { name: '韓式部隊鍋', location: '明洞樂伯部隊鍋', checked: false, note: '', showNote: true },
+                    { name: '炸雞', location: '東大門橋村炸雞1號店', checked: false, note: '', showNote: true },
+                    { name: '生拌牛肉', location: '廣藏市場富村生牛肉', checked: false, note: '', showNote: true },
+                    { name: '米熱狗', location: '各分店', checked: false, note: '想嘗試莫札瑞拉起司口味', showNote: true },
+                    { name: '人參雞湯', location: '土俗村蔘雞湯', checked: false, note: '', showNote: true }
                 ]);
                 
-                // 打開美食地圖
-                const openFoodMap = (foodName, location) => {
-                    const food = foodList.value.find(f => f.name === foodName);
-                    const query = food?.mapQuery || `${foodName} ${location} Seoul`;
-                    const encodedQuery = encodeURIComponent(query);
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodedQuery}`, '_blank');
-                };
-                
-                // 計算已完成的美食數量
-                const completedFoods = computed(() => {
+                // 計算已選擇的美食數量
+                const checkedCount = computed(() => {
                     return foodList.value.filter(food => food.checked).length;
                 });
                 
-                // 計算完成百分比
-                const completedPercentage = computed(() => {
-                    return Math.round((completedFoods.value / foodList.value.length) * 100);
-                });
-                
-                // 重設美食清單
-                const resetFoodList = () => {
-                    if (confirm("確定要重設美食清單嗎？所有勾選將會被清除。")) {
-                        foodList.value.forEach(food => {
-                            food.checked = false;
-                        });
-                    }
+                // 更新天氣數據
+                const updateWeather = () => {
+                    alert('正在從韓國氣象廳更新天氣數據... (此為演示功能)');
+                    // 實際應用中可以在此處調用API
                 };
                 
-                // 全選美食
-                const selectAllFood = () => {
-                    foodList.value.forEach(food => {
-                        food.checked = true;
-                    });
+                // 打開Naver地圖
+                const openNaverMap = (item) => {
+                    const query = encodeURIComponent(item.mapQuery || item.activity);
+                    window.open(`https://map.naver.com/v5/search/${query}`, '_blank');
                 };
                 
-                // 初始化時獲取天氣數據
-                onMounted(() => {
-                    fetchWeather();
-                    // 設置初始更新時間
-                    weather.value.updateTime = new Date().toLocaleTimeString('zh-Hant', { 
-                        hour: '2-digit', 
-                        minute: '2-digit',
-                        hour12: false
-                    });
-                });
+                // 打開Google地圖
+                const openGoogleMap = (food) => {
+                    const query = encodeURIComponent(`${food.name} ${food.location}`);
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+                };
+                
+                // 切換美食備註顯示
+                const toggleFoodNote = (index) => {
+                    foodList.value[index].showNote = !foodList.value[index].showNote;
+                };
                 
                 return {
-                    weather,
-                    weatherIconColor,
-                    fetchWeather,
-                    itinerary,
-                    activeDay,
-                    openGoogleMap,
+                    currentPage,
+                    timelineItems,
+                    weatherForecast,
+                    scheduleDetails,
                     foodList,
-                    openFoodMap,
-                    completedFoods,
-                    completedPercentage,
-                    resetFoodList,
-                    selectAllFood
+                    checkedCount,
+                    updateWeather,
+                    openNaverMap,
+                    openGoogleMap,
+                    toggleFoodNote
                 };
             }
         }).mount('#app');
