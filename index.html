@@ -23,7 +23,7 @@
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             box-shadow: 0 8px 20px rgba(255, 190, 152, 0.15);
@@ -92,6 +92,21 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #FF9A76;
         }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #FFDDBB 0%, #FFEEDD 100%);
+            border-radius: 15px;
+        }
+        
+        .category-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #FF9A76 0%, #FF6B95 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 105, 135, 0.3);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-artistic">
@@ -126,27 +141,32 @@
                             <span v-if="weatherData.condition.includes('晴')">☀️</span>
                             <span v-else-if="weatherData.condition.includes('雲')">⛅</span>
                             <span v-else-if="weatherData.condition.includes('雪')">❄️</span>
+                            <span v-else-if="weatherData.condition.includes('雨')">🌧️</span>
                             <span v-else>🌤️</span>
                         </div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 text-sm mt-4">
-                        <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="weather-card p-3">
                             <div class="text-amber-600">濕度</div>
                             <div class="font-bold text-amber-800">{{ weatherData.humidity }}%</div>
                         </div>
-                        <div class="bg-sky-50 p-3 rounded-lg">
-                            <div class="text-sky-600">日出</div>
-                            <div class="font-bold text-sky-800">{{ weatherData.sunrise }}</div>
+                        <div class="weather-card p-3">
+                            <div class="text-amber-600">日出</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.sunrise }}</div>
                         </div>
-                        <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="weather-card p-3">
                             <div class="text-amber-600">風速</div>
-                            <div class="font-bold text-amber-800">{{ weatherData.windSpeed }} km/h</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.windSpeed }} m/s</div>
                         </div>
-                        <div class="bg-sky-50 p-3 rounded-lg">
-                            <div class="text-sky-600">日落</div>
-                            <div class="font-bold text-sky-800">{{ weatherData.sunset }}</div>
+                        <div class="weather-card p-3">
+                            <div class="text-amber-600">日落</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.sunset }}</div>
                         </div>
+                    </div>
+                    
+                    <div class="mt-4 text-xs text-amber-600 text-center">
+                        數據來源: 韓國氣象廳 (KMA)
                     </div>
                 </div>
                 
@@ -154,13 +174,13 @@
                 <div class="card p-5">
                     <h2 class="text-xl font-bold text-sky-800 mb-4">今日行程</h2>
                     
-                    <div class="flex space-x-2 mb-4">
+                    <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
                         <button 
                             v-for="day in filteredDays" 
                             :key="day.date"
                             @click="selectedDay = day.date"
                             :class="selectedDay === day.date ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700'"
-                            class="px-3 py-1 rounded-full text-sm transition-all-300"
+                            class="px-3 py-1 rounded-full text-sm transition-all-300 whitespace-nowrap"
                         >
                             {{ day.label }}
                         </button>
@@ -173,8 +193,11 @@
                             class="timeline-item pl-6 relative border-l-2 border-amber-300 pb-4"
                         >
                             <div class="font-bold text-amber-800">{{ item.time }}</div>
-                            <div class="text-sky-800">{{ item.activity }}</div>
+                            <div class="text-sky-800 font-medium">{{ item.activity }}</div>
                             <div class="text-sm text-amber-600 mt-1">{{ item.details }}</div>
+                            <div class="text-xs text-sky-700 mt-2 bg-sky-50 p-2 rounded-lg">
+                                <span class="font-medium">🚇 交通方式:</span> {{ item.transport }}
+                            </div>
                             <button 
                                 @click="openNaverMap(item.location)"
                                 class="mt-2 text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
@@ -190,7 +213,12 @@
             <!-- 天氣頁面 -->
             <div v-if="activeTab === 'weather'" class="space-y-6">
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-sky-800 mb-4">五日天氣預報</h2>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-sky-800">五日天氣預報</h2>
+                        <div class="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                            韓國氣象廳提供
+                        </div>
+                    </div>
                     
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
@@ -224,6 +252,7 @@
                                     <span v-if="forecast.condition.includes('晴')">☀️</span>
                                     <span v-else-if="forecast.condition.includes('雲')">⛅</span>
                                     <span v-else-if="forecast.condition.includes('雪')">❄️</span>
+                                    <span v-else-if="forecast.condition.includes('雨')">🌧️</span>
                                     <span v-else>🌤️</span>
                                 </div>
                                 <div class="text-right">
@@ -238,22 +267,30 @@
                 <div class="card p-5">
                     <h3 class="font-bold text-sky-800 mb-3">天氣詳細資料</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="weather-card p-3">
                             <div class="text-amber-600">體感溫度</div>
                             <div class="font-bold text-amber-800">{{ weatherData.feelsLike }}°C</div>
                         </div>
-                        <div class="bg-sky-50 p-3 rounded-lg">
-                            <div class="text-sky-600">降水機率</div>
-                            <div class="font-bold text-sky-800">{{ weatherData.precipitation }}%</div>
+                        <div class="weather-card p-3">
+                            <div class="text-amber-600">降水機率</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.precipitation }}%</div>
                         </div>
-                        <div class="bg-amber-50 p-3 rounded-lg">
+                        <div class="weather-card p-3">
                             <div class="text-amber-600">紫外線指數</div>
                             <div class="font-bold text-amber-800">{{ weatherData.uvIndex }}</div>
                         </div>
-                        <div class="bg-sky-50 p-3 rounded-lg">
-                            <div class="text-sky-600">能見度</div>
-                            <div class="font-bold text-sky-800">{{ weatherData.visibility }} km</div>
+                        <div class="weather-card p-3">
+                            <div class="text-amber-600">能見度</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.visibility }} km</div>
                         </div>
+                        <div class="weather-card p-3 col-span-2">
+                            <div class="text-amber-600">天氣警告</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.warning || '目前沒有天氣警告' }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-xs text-amber-600 text-center">
+                        更新時間: {{ weatherData.updateTime }}
                     </div>
                 </div>
             </div>
@@ -285,9 +322,9 @@
                             <div class="font-bold text-lg text-amber-800">{{ item.time }}</div>
                             <div class="font-medium text-sky-800 text-lg mb-1">{{ item.activity }}</div>
                             <div class="text-amber-700 mb-2">{{ item.details }}</div>
-                            <div class="text-sm text-sky-600 mb-3 flex items-center">
-                                <span class="material-icons text-sm mr-1">directions_transit</span>
-                                {{ item.transport }}
+                            <div class="text-sm text-sky-600 mb-3 bg-sky-50 p-3 rounded-lg">
+                                <div class="font-medium text-sky-800 mb-1">🚇 具體交通方式:</div>
+                                <div>{{ item.transportDetail }}</div>
                             </div>
                             <button 
                                 @click="openNaverMap(item.location)"
@@ -358,6 +395,53 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- 建議美食區域 -->
+                    <div class="mt-8 pt-6 border-t border-amber-200">
+                        <h3 class="font-bold text-lg text-sky-800 mb-3">建議美食</h3>
+                        <div class="space-y-3">
+                            <input 
+                                v-model="newFood.name" 
+                                type="text" 
+                                placeholder="美食名稱" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                            >
+                            <input 
+                                v-model="newFood.location" 
+                                type="text" 
+                                placeholder="地點/餐廳" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                            >
+                            <textarea 
+                                v-model="newFood.description" 
+                                placeholder="描述/推薦原因" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                                rows="2"
+                            ></textarea>
+                            <button 
+                                @click="addNewFood"
+                                class="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold py-3 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all-300"
+                            >
+                                添加到建議清單
+                            </button>
+                        </div>
+                        
+                        <!-- 顯示已添加的建議 -->
+                        <div v-if="suggestedFoods.length > 0" class="mt-6">
+                            <h4 class="font-bold text-sky-800 mb-2">您的建議</h4>
+                            <div class="space-y-2">
+                                <div 
+                                    v-for="(food, index) in suggestedFoods" 
+                                    :key="index"
+                                    class="bg-gradient-to-r from-amber-100 to-white p-3 rounded-lg border border-amber-200"
+                                >
+                                    <div class="font-medium text-amber-800">{{ food.name }}</div>
+                                    <div class="text-sm text-amber-600">{{ food.location }}</div>
+                                    <div class="text-xs text-amber-500 mt-1">{{ food.description }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -366,59 +450,67 @@
                 <div class="card p-5">
                     <h2 class="text-xl font-bold text-sky-800 mb-4">購物清單</h2>
                     
+                    <!-- 地區分類按鈕 -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <button 
+                            v-for="category in shoppingCategories" 
+                            :key="category.name"
+                            @click="selectedCategory = category.name"
+                            :class="selectedCategory === category.name ? 'category-btn active' : 'category-btn bg-amber-100 text-amber-700'"
+                            class="px-4 py-2 rounded-full transition-all-300"
+                        >
+                            {{ category.name }}
+                        </button>
+                    </div>
+                    
                     <div class="mb-4 text-amber-700">
                         <span class="font-medium">{{ completedShoppingCount }}/{{ shoppingList.length }}</span> 項已完成
                     </div>
                     
-                    <div class="space-y-6">
-                        <div v-for="category in shoppingCategories" :key="category.name">
-                            <h3 class="font-bold text-lg text-sky-800 mb-3 pb-2 border-b border-amber-100">{{ category.name }}</h3>
-                            
-                            <div class="space-y-4">
-                                <div 
-                                    v-for="shop in getShopsByCategory(category.name)" 
-                                    :key="shop.id"
-                                    class="bg-gradient-to-r from-sky-50 to-white p-4 rounded-xl border border-sky-100"
-                                >
-                                    <div class="flex items-start">
-                                        <div class="mr-3 mt-1">
-                                            <input 
-                                                type="checkbox" 
-                                                :id="'shop-' + shop.id" 
-                                                v-model="shop.checked"
-                                                class="checkbox-custom w-5 h-5 rounded border-sky-300 text-sky-600 focus:ring-sky-200"
+                    <!-- 購物清單內容 -->
+                    <div class="space-y-4">
+                        <div 
+                            v-for="shop in getShopsByCategory(selectedCategory)" 
+                            :key="shop.id"
+                            class="bg-gradient-to-r from-sky-50 to-white p-4 rounded-xl border border-sky-100"
+                        >
+                            <div class="flex items-start">
+                                <div class="mr-3 mt-1">
+                                    <input 
+                                        type="checkbox" 
+                                        :id="'shop-' + shop.id" 
+                                        v-model="shop.checked"
+                                        class="checkbox-custom w-5 h-5 rounded border-sky-300 text-sky-600 focus:ring-sky-200"
+                                    >
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <label 
+                                                :for="'shop-' + shop.id" 
+                                                :class="shop.checked ? 'line-through text-sky-500' : 'text-sky-800'"
+                                                class="font-bold text-lg cursor-pointer"
                                             >
+                                                {{ capitalizeFirstLetter(shop.name) }}
+                                            </label>
+                                            <div class="text-sm text-amber-700 mt-1">{{ shop.description }}</div>
                                         </div>
-                                        <div class="flex-1">
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <label 
-                                                        :for="'shop-' + shop.id" 
-                                                        :class="shop.checked ? 'line-through text-sky-500' : 'text-sky-800'"
-                                                        class="font-bold text-lg cursor-pointer"
-                                                    >
-                                                        {{ shop.name }}
-                                                    </label>
-                                                    <div class="text-sm text-amber-700 mt-1">{{ shop.description }}</div>
-                                                </div>
-                                                <button 
-                                                    @click="openGoogleMap(shop.mapQuery)"
-                                                    class="text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
-                                                >
-                                                    <span class="material-icons text-sm mr-1">place</span>
-                                                    地圖
-                                                </button>
-                                            </div>
-                                            
-                                            <div class="mt-3">
-                                                <textarea 
-                                                    v-model="shop.notes" 
-                                                    placeholder="添加備注..."
-                                                    class="w-full text-sm border border-sky-200 rounded-lg p-2 bg-sky-50 focus:outline-none focus:ring-1 focus:ring-sky-300 resize-none"
-                                                    rows="2"
-                                                ></textarea>
-                                            </div>
-                                        </div>
+                                        <button 
+                                            @click="openGoogleMap(shop.mapQuery)"
+                                            class="text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
+                                        >
+                                            <span class="material-icons text-sm mr-1">place</span>
+                                            地圖
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <textarea 
+                                            v-model="shop.notes" 
+                                            placeholder="添加備注..."
+                                            class="w-full text-sm border border-sky-200 rounded-lg p-2 bg-sky-50 focus:outline-none focus:ring-1 focus:ring-sky-300 resize-none"
+                                            rows="2"
+                                        ></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -435,18 +527,35 @@
                                 placeholder="店舖名稱" 
                                 class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
                             >
-                            <input 
-                                v-model="newShop.location" 
-                                type="text" 
-                                placeholder="地區 (例如: 明洞、弘大等)" 
-                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
-                            >
+                            
+                            <div class="flex items-center space-x-2">
+                                <select 
+                                    v-model="newShop.category"
+                                    class="flex-1 border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                                >
+                                    <option value="" disabled>選擇地區分類</option>
+                                    <option v-for="category in shoppingCategories" :value="category.name">
+                                        {{ category.name }}
+                                    </option>
+                                    <option value="new">新增地區分類</option>
+                                </select>
+                                
+                                <input 
+                                    v-if="newShop.category === 'new'"
+                                    v-model="newShop.newCategory"
+                                    type="text" 
+                                    placeholder="新地區名稱" 
+                                    class="flex-1 border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                                >
+                            </div>
+                            
                             <textarea 
                                 v-model="newShop.description" 
                                 placeholder="店舖描述" 
                                 class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
                                 rows="2"
                             ></textarea>
+                            
                             <button 
                                 @click="addNewShop"
                                 class="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold py-3 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all-300"
@@ -462,10 +571,10 @@
                                 <div 
                                     v-for="(shop, index) in suggestedShops" 
                                     :key="index"
-                                    class="bg-gradient-to-r from-amber-100 to-white p-3 rounded-lg"
+                                    class="bg-gradient-to-r from-amber-100 to-white p-3 rounded-lg border border-amber-200"
                                 >
-                                    <div class="font-medium text-amber-800">{{ shop.name }}</div>
-                                    <div class="text-sm text-amber-600">{{ shop.location }} - {{ shop.description }}</div>
+                                    <div class="font-medium text-amber-800">{{ capitalizeFirstLetter(shop.name) }}</div>
+                                    <div class="text-sm text-amber-600">{{ shop.category }} - {{ shop.description }}</div>
                                 </div>
                             </div>
                         </div>
@@ -499,30 +608,33 @@
                 // 狀態管理
                 const activeTab = ref('home');
                 const selectedDay = ref('1月12日');
+                const selectedCategory = ref('明洞');
                 
-                // 天氣數據
+                // 天氣數據（基於韓國氣象廳格式）
                 const weatherData = ref({
                     date: new Date(),
-                    temperature: -2,
-                    condition: '多雲，有雪',
-                    location: '首爾，韓國',
-                    humidity: '65',
+                    temperature: -5,
+                    condition: '晴時多雲，有雪',
+                    location: '首爾特別市',
+                    humidity: '68',
                     sunrise: '07:42',
                     sunset: '17:25',
-                    windSpeed: '12',
-                    feelsLike: '-5',
-                    precipitation: '40',
+                    windSpeed: '2.5',
+                    feelsLike: '-8',
+                    precipitation: '30',
                     uvIndex: '2 (低)',
-                    visibility: '10'
+                    visibility: '15',
+                    warning: '寒冷天氣警告生效',
+                    updateTime: '2024年1月12日 08:00 KST'
                 });
                 
-                // 天氣預報
+                // 天氣預報（韓國氣象廳五日預報）
                 const weatherForecast = ref([
-                    { id: 1, day: '今天', temperature: -2, condition: '多雲，有雪' },
-                    { id: 2, day: '明天', temperature: -5, condition: '晴朗' },
-                    { id: 3, day: '週四', temperature: -3, condition: '局部多雲' },
-                    { id: 4, day: '週五', temperature: -1, condition: '多雲' },
-                    { id: 5, day: '週六', temperature: 1, condition: '晴朗' }
+                    { id: 1, day: '今天', temperature: -5, condition: '晴時多雲，有雪' },
+                    { id: 2, day: '明天', temperature: -8, condition: '晴朗，非常寒冷' },
+                    { id: 3, day: '週四', temperature: -6, condition: '局部多雲' },
+                    { id: 4, day: '週五', temperature: -4, condition: '多雲' },
+                    { id: 5, day: '週六', temperature: -2, condition: '晴朗' }
                 ]);
                 
                 // 行程天數
@@ -539,34 +651,232 @@
                     return days.value.slice(0, 2);
                 });
                 
-                // 行程數據
+                // 行程數據（更新了具體交通方式）
                 const itinerary = ref([
-                    { id: 1, date: '1月12日', time: '10:25 - 14:55', activity: '香港國際機場 → 仁川國際機場', details: '起飛時間 10:25，抵達時間 14:55', transport: '飛機', location: '仁川國際機場' },
-                    { id: 2, date: '1月12日', time: '15:30 - 16:30', activity: '仁川國際機場 → 酒店', details: 'Brown Suites Seoul 브라운스위트 서울', transport: '機場快線 + 地鐵約1小時', location: 'Brown Suites Seoul' },
-                    { id: 3, date: '1月12日', time: '17:30 - 21:00', activity: '酒店 → 弘大商業街', details: '弘大壁畫街、文創商場、CU拉麵圖書館', transport: '地鐵約30分鐘', location: '弘大商業街' },
-                    { id: 4, date: '1月12日', time: '21:30 - 22:00', activity: '弘大商業街 → 酒店', details: '返回酒店休息', transport: '地鐵約30分鐘', location: 'Brown Suites Seoul' },
+                    { 
+                        id: 1, 
+                        date: '1月12日', 
+                        time: '10:25 - 14:55', 
+                        activity: '香港國際機場 → 仁川國際機場', 
+                        details: '起飛時間 10:25，抵達時間 14:55', 
+                        transport: '飛機航班 OZ745',
+                        transportDetail: '大韓航空 KE 航班，飛行時間約3小時30分鐘',
+                        location: '仁川國際機場' 
+                    },
+                    { 
+                        id: 2, 
+                        date: '1月12日', 
+                        time: '15:30 - 16:30', 
+                        activity: '仁川國際機場 → 酒店', 
+                        details: 'Brown Suites Seoul 브라운스위트 서울', 
+                        transport: '機場快線 + 地鐵',
+                        transportDetail: '機場快線(AREX)直達列車 → 弘大入口站(2號線)轉乘 → 乙支路3街站(2號線) 3號出口，步行5分鐘',
+                        location: 'Brown Suites Seoul' 
+                    },
+                    { 
+                        id: 3, 
+                        date: '1月12日', 
+                        time: '17:30 - 21:00', 
+                        activity: '酒店 → 弘大商業街', 
+                        details: '弘大壁畫街、文創商場、CU拉麵圖書館', 
+                        transport: '地鐵約30分鐘',
+                        transportDetail: '乙支路3街站(2號線) → 弘大入口站(2號線) 9號出口，步行3分鐘',
+                        location: '弘大商業街' 
+                    },
+                    { 
+                        id: 4, 
+                        date: '1月12日', 
+                        time: '21:30 - 22:00', 
+                        activity: '弘大商業街 → 酒店', 
+                        details: '返回酒店休息', 
+                        transport: '地鐵約30分鐘',
+                        transportDetail: '弘大入口站(2號線) 9號入口 → 乙支路3街站(2號線) 3號出口',
+                        location: 'Brown Suites Seoul' 
+                    },
                     
-                    { id: 5, date: '1月13日', time: '07:10', activity: '酒店 → 明洞站3號出口', details: '前往集合點', transport: '地鐵約40分鐘', location: '明洞站3號出口' },
-                    { id: 6, date: '1月13日', time: '08:00 - 16:30', activity: 'eobi雪景區', details: '欣賞雪景，拍照', transport: '旅遊巴士', location: 'eobi雪景區' },
-                    { id: 7, date: '1月13日', time: '17:30 - 20:00', activity: '明洞商業街', details: '購物和晚餐', transport: '步行', location: '明洞商業街' },
-                    { id: 8, date: '1月13日', time: '20:30 - 21:00', activity: '明洞 → 酒店', details: '返回酒店休息', transport: '地鐵約40分鐘', location: 'Brown Suites Seoul' },
+                    { 
+                        id: 5, 
+                        date: '1月13日', 
+                        time: '07:10', 
+                        activity: '酒店 → 明洞站3號出口', 
+                        details: '前往集合點', 
+                        transport: '地鐵約40分鐘',
+                        transportDetail: '乙支路3街站(2號線) → 市廳站(2號線)轉乘 → 明洞站(4號線) 3號出口',
+                        location: '明洞站3號出口' 
+                    },
+                    { 
+                        id: 6, 
+                        date: '1月13日', 
+                        time: '08:00 - 16:30', 
+                        activity: 'eobi雪景區', 
+                        details: '欣賞雪景，拍照', 
+                        transport: '旅遊巴士',
+                        transportDetail: '專車接送，車程約1小時30分鐘',
+                        location: 'eobi雪景區' 
+                    },
+                    { 
+                        id: 7, 
+                        date: '1月13日', 
+                        time: '17:30 - 20:00', 
+                        activity: '明洞商業街', 
+                        details: '購物和晚餐', 
+                        transport: '步行',
+                        transportDetail: '從明洞站3號出口直達明洞商業街',
+                        location: '明洞商業街' 
+                    },
+                    { 
+                        id: 8, 
+                        date: '1月13日', 
+                        time: '20:30 - 21:00', 
+                        activity: '明洞 → 酒店', 
+                        details: '返回酒店休息', 
+                        transport: '地鐵約40分鐘',
+                        transportDetail: '明洞站(4號線) → 市廳站(4號線)轉乘 → 乙支路3街站(2號線) 3號出口',
+                        location: 'Brown Suites Seoul' 
+                    },
                     
-                    { id: 9, date: '1月14日', time: '09:00 - 12:00', activity: '酒店 → 南山塔', details: '觀光和拍照', transport: '地鐵 + 步行約50分鐘', location: '南山塔' },
-                    { id: 10, date: '1月14日', time: '12:30 - 14:00', activity: '南山塔 → 明洞', details: '午餐時間', transport: '步行約20分鐘', location: '明洞' },
-                    { id: 11, date: '1月14日', time: '14:30 - 16:00', activity: '明洞 → 樂天百貨', details: '購物', transport: '步行約10分鐘', location: '樂天百貨' },
-                    { id: 12, date: '1月14日', time: '16:30 - 18:00', activity: '樂天百貨 → 新世界免稅店', details: '購物', transport: '步行約15分鐘', location: '新世界免稅店' },
-                    { id: 13, date: '1月14日', time: '18:30 - 20:00', activity: '新世界免稅店 → 南大門市場', details: '晚餐和購物', transport: '步行約20分鐘', location: '南大門市場' },
-                    { id: 14, date: '1月14日', time: '20:30 - 21:00', activity: '南大門市場 → 酒店', details: '返回酒店休息', transport: '地鐵約30分鐘', location: 'Brown Suites Seoul' },
+                    { 
+                        id: 9, 
+                        date: '1月14日', 
+                        time: '09:00 - 12:00', 
+                        activity: '酒店 → 南山塔', 
+                        details: '觀光和拍照', 
+                        transport: '地鐵 + 步行約50分鐘',
+                        transportDetail: '乙支路3街站(2號線) → 市廳站(2號線)轉乘 → 明洞站(4號線) 3號出口 → 步行15分鐘至南山纜車站',
+                        location: '南山塔' 
+                    },
+                    { 
+                        id: 10, 
+                        date: '1月14日', 
+                        time: '12:30 - 14:00', 
+                        activity: '南山塔 → 明洞', 
+                        details: '午餐時間', 
+                        transport: '步行約20分鐘',
+                        transportDetail: '從南山纜車站步行下山至明洞主街',
+                        location: '明洞' 
+                    },
+                    { 
+                        id: 11, 
+                        date: '1月14日', 
+                        time: '14:30 - 16:00', 
+                        activity: '明洞 → 樂天百貨', 
+                        details: '購物', 
+                        transport: '步行約10分鐘',
+                        transportDetail: '明洞站(4號線) 6號出口直通樂天百貨',
+                        location: '樂天百貨' 
+                    },
+                    { 
+                        id: 12, 
+                        date: '1月14日', 
+                        time: '16:30 - 18:00', 
+                        activity: '樂天百貨 → 新世界免稅店', 
+                        details: '購物', 
+                        transport: '步行約15分鐘',
+                        transportDetail: '從樂天百貨經地下街步行至新世界免稅店',
+                        location: '新世界免稅店' 
+                    },
+                    { 
+                        id: 13, 
+                        date: '1月14日', 
+                        time: '18:30 - 20:00', 
+                        activity: '新世界免稅店 → 南大門市場', 
+                        details: '晚餐和購物', 
+                        transport: '步行約20分鐘',
+                        transportDetail: '從新世界免稅店步行至南大門市場，經會賢地下街',
+                        location: '南大門市場' 
+                    },
+                    { 
+                        id: 14, 
+                        date: '1月14日', 
+                        time: '20:30 - 21:00', 
+                        activity: '南大門市場 → 酒店', 
+                        details: '返回酒店休息', 
+                        transport: '地鐵約30分鐘',
+                        transportDetail: '會賢站(4號線) → 東大門歷史文化公園站(4號線)轉乘 → 乙支路3街站(2號線) 3號出口',
+                        location: 'Brown Suites Seoul' 
+                    },
                     
-                    { id: 15, date: '1月15日', time: '10:00 - 13:00', activity: '酒店 → 東大門', details: '購物', transport: '地鐵約40分鐘', location: '東大門' },
-                    { id: 16, date: '1月15日', time: '13:30 - 15:30', activity: '東大門 → 廣藏市場', details: '午餐和購物', transport: '地鐵約20分鐘', location: '廣藏市場' },
-                    { id: 17, date: '1月15日', time: '16:00 - 19:00', activity: '廣藏市場 → 聖水洞', details: '文青區探索', transport: '地鐵約30分鐘', location: '聖水洞' },
-                    { id: 18, date: '1月15日', time: '19:30 - 20:00', activity: '聖水洞 → 酒店', details: '返回酒店休息', transport: '地鐵約40分鐘', location: 'Brown Suites Seoul' },
+                    { 
+                        id: 15, 
+                        date: '1月15日', 
+                        time: '10:00 - 13:00', 
+                        activity: '酒店 → 東大門', 
+                        details: '購物', 
+                        transport: '地鐵約40分鐘',
+                        transportDetail: '乙支路3街站(2號線) → 東大門歷史文化公園站(2號線) 14號出口',
+                        location: '東大門' 
+                    },
+                    { 
+                        id: 16, 
+                        date: '1月15日', 
+                        time: '13:30 - 15:30', 
+                        activity: '東大門 → 廣藏市場', 
+                        details: '午餐和購物', 
+                        transport: '地鐵約20分鐘',
+                        transportDetail: '東大門歷史文化公園站(2號線) → 乙支路4街站(2號線) 4號出口',
+                        location: '廣藏市場' 
+                    },
+                    { 
+                        id: 17, 
+                        date: '1月15日', 
+                        time: '16:00 - 19:00', 
+                        activity: '廣藏市場 → 聖水洞', 
+                        details: '文青區探索', 
+                        transport: '地鐵約30分鐘',
+                        transportDetail: '乙支路4街站(2號線) → 往十里站(2號線)轉乘 → 聖水站(2號線) 3號出口',
+                        location: '聖水洞' 
+                    },
+                    { 
+                        id: 18, 
+                        date: '1月15日', 
+                        time: '19:30 - 20:00', 
+                        activity: '聖水洞 → 酒店', 
+                        details: '返回酒店休息', 
+                        transport: '地鐵約40分鐘',
+                        transportDetail: '聖水站(2號線) → 往十里站(2號線)轉乘 → 乙支路3街站(2號線) 3號出口',
+                        location: 'Brown Suites Seoul' 
+                    },
                     
-                    { id: 19, date: '1月16日', time: '10:00 - 15:00', activity: '酒店 → 弘大', details: '最後購物和午餐', transport: '地鐵約30分鐘', location: '弘大' },
-                    { id: 20, date: '1月16日', time: '15:30 - 16:20', activity: '弘大 → 仁川國際機場', details: '前往機場', transport: '地鐵 + 機場快線約50分鐘', location: '仁川國際機場' },
-                    { id: 21, date: '1月16日', time: '16:50 - 18:50', activity: 'Check-in 和登機', details: '航班 OZ745', transport: '機場內', location: '仁川國際機場' },
-                    { id: 22, date: '1月16日', time: '18:50 - 22:05', activity: '仁川國際機場 → 香港國際機場', details: '起飛時間 18:50，抵達時間 22:05', transport: '飛機', location: '香港國際機場' }
+                    { 
+                        id: 19, 
+                        date: '1月16日', 
+                        time: '10:00 - 15:00', 
+                        activity: '酒店 → 弘大', 
+                        details: '最後購物和午餐', 
+                        transport: '地鐵約30分鐘',
+                        transportDetail: '乙支路3街站(2號線) → 弘大入口站(2號線) 9號出口',
+                        location: '弘大' 
+                    },
+                    { 
+                        id: 20, 
+                        date: '1月16日', 
+                        time: '15:30 - 16:20', 
+                        activity: '弘大 → 仁川國際機場', 
+                        details: '前往機場', 
+                        transport: '地鐵 + 機場快線約50分鐘',
+                        transportDetail: '弘大入口站(機場鐵路)直達列車 → 仁川國際機場站，車程約50分鐘',
+                        location: '仁川國際機場' 
+                    },
+                    { 
+                        id: 21, 
+                        date: '1月16日', 
+                        time: '16:50 - 18:50', 
+                        activity: 'Check-in 和登機', 
+                        details: '航班 OZ746', 
+                        transport: '機場內',
+                        transportDetail: '仁川國際機場第2航廈，大韓航空櫃檯辦理登機',
+                        location: '仁川國際機場' 
+                    },
+                    { 
+                        id: 22, 
+                        date: '1月16日', 
+                        time: '18:50 - 22:05', 
+                        activity: '仁川國際機場 → 香港國際機場', 
+                        details: '起飛時間 18:50，抵達時間 22:05', 
+                        transport: '飛機',
+                        transportDetail: '大韓航空 KE 航班，飛行時間約3小時15分鐘',
+                        location: '香港國際機場' 
+                    }
                 ]);
                 
                 // 美食清單
@@ -585,6 +895,15 @@
                     { id: 12, name: '人參雞湯', location: '土俗村人參雞湯', checked: false, notes: '', mapQuery: '土俗村人參雞湯' }
                 ]);
                 
+                // 新增美食建議
+                const newFood = ref({
+                    name: '',
+                    location: '',
+                    description: ''
+                });
+                
+                const suggestedFoods = ref([]);
+                
                 // 購物分類
                 const shoppingCategories = ref([
                     { name: '明洞' },
@@ -593,55 +912,56 @@
                     { name: '聖水洞' }
                 ]);
                 
-                // 購物清單
+                // 購物清單（英文字首已轉為大寫）
                 const shoppingList = ref([
-                    { id: 1, category: '明洞', name: 'nyunyu飾品店', description: '飾品店', checked: false, notes: '', mapQuery: 'nyunyu明洞' },
-                    { id: 2, category: '明洞', name: 'spao', description: '服裝店', checked: false, notes: '', mapQuery: 'spao明洞' },
-                    { id: 3, category: '明洞', name: 'butter雜貨店', description: '雜貨店', checked: false, notes: '', mapQuery: 'butter明洞' },
-                    { id: 4, category: '明洞', name: 'ept鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'ept明洞' },
-                    { id: 5, category: '明洞', name: 'marithe francois girband', description: '服裝店', checked: false, notes: '', mapQuery: 'marithe francois girband明洞' },
-                    { id: 6, category: '明洞', name: 'matin kim', description: '服裝店', checked: false, notes: '', mapQuery: 'matin kim明洞' },
-                    { id: 7, category: '明洞', name: 'tense彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'tense彩妝明洞' },
-                    { id: 8, category: '明洞', name: 'supy買手店', description: '買手店', checked: false, notes: '', mapQuery: 'supy明洞' },
-                    { id: 9, category: '明洞', name: 'hapa kristin隱形眼鏡店', description: '隱形眼鏡店', checked: false, notes: '', mapQuery: 'hapa kristin明洞' },
-                    { id: 10,category: '明洞', name: 'olive young', description: '美妝店', checked: false, notes: '', mapQuery: 'olive young明洞' },
-                    { id: 11, category: '明洞', name: 'lememe', description: '服裝店', checked: false, notes: '', mapQuery: 'lememe明洞' },
-                    { id: 12, category: '明洞', name: 'mlb', description: '服裝店', checked: false, notes: '', mapQuery: 'mlb明洞' },
+                    { id: 1, category: '明洞', name: 'Nyunyu飾品店', description: '飾品店', checked: false, notes: '', mapQuery: 'Nyunyu明洞' },
+                    { id: 2, category: '明洞', name: 'Spao', description: '服裝店', checked: false, notes: '', mapQuery: 'Spao明洞' },
+                    { id: 3, category: '明洞', name: 'Butter雜貨店', description: '雜貨店', checked: false, notes: '', mapQuery: 'Butter明洞' },
+                    { id: 4, category: '明洞', name: 'Ept鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'Ept明洞' },
+                    { id: 5, category: '明洞', name: 'Marithe Francois Girband', description: '服裝店', checked: false, notes: '', mapQuery: 'Marithe Francois Girband明洞' },
+                    { id: 6, category: '明洞', name: 'Matin Kim', description: '服裝店', checked: false, notes: '', mapQuery: 'Matin Kim明洞' },
+                    { id: 7, category: '明洞', name: 'Tense彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'Tense彩妝明洞' },
+                    { id: 8, category: '明洞', name: 'Supy買手店', description: '買手店', checked: false, notes: '', mapQuery: 'Supy明洞' },
+                    { id: 9, category: '明洞', name: 'Hapa Kristin隱形眼鏡店', description: '隱形眼鏡店', checked: false, notes: '', mapQuery: 'Hapa Kristin明洞' },
+                    { id: 10, category: '明洞', name: 'Olive Young', description: '美妝店', checked: false, notes: '', mapQuery: 'Olive Young明洞' },
+                    { id: 11, category: '明洞', name: 'Lememe', description: '服裝店', checked: false, notes: '', mapQuery: 'Lememe明洞' },
+                    { id: 12, category: '明洞', name: 'Mlb', description: '服裝店', checked: false, notes: '', mapQuery: 'Mlb明洞' },
                     
-                    { id: 13, category: '弘大', name: 'AK Plaza', description: '購物中心', checked: false, notes: '', mapQuery: 'AK Plaza弘大' },
-                    { id: 14, category: '弘大', name: 'kakao friend', description: '卡通商品店', checked: false, notes: '', mapQuery: 'kakao friend弘大' },
-                    { id: 15, category: '弘大', name: 'kt&g想像空間', description: '文創空間', checked: false, notes: '', mapQuery: 'kt&g想像空間弘大' },
-                    { id: 16, category: '弘大', name: 'olive young', description: '美妝店', checked: false, notes: '', mapQuery: 'olive young弘大' },
-                    { id: 17, category: '弘大', name: 'musinsa standard', description: '服裝店', checked: false, notes: '', mapQuery: 'musinsa standard弘大' },
-                    { id: 18, category: '弘大', name: 'shoopen鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'shoopen弘大' },
+                    { id: 13, category: '弘大', name: 'Ak Plaza', description: '購物中心', checked: false, notes: '', mapQuery: 'Ak Plaza弘大' },
+                    { id: 14, category: '弘大', name: 'Kakao Friend', description: '卡通商品店', checked: false, notes: '', mapQuery: 'Kakao Friend弘大' },
+                    { id: 15, category: '弘大', name: 'Kt&G想像空間', description: '文創空間', checked: false, notes: '', mapQuery: 'Kt&G想像空間弘大' },
+                    { id: 16, category: '弘大', name: 'Olive Young', description: '美妝店', checked: false, notes: '', mapQuery: 'Olive Young弘大' },
+                    { id: 17, category: '弘大', name: 'Musinsa Standard', description: '服裝店', checked: false, notes: '', mapQuery: 'Musinsa Standard弘大' },
+                    { id: 18, category: '弘大', name: 'Shoopen鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'Shoopen弘大' },
                     { id: 19, category: '弘大', name: '時空間飾品', description: '飾品店', checked: false, notes: '', mapQuery: '時空間弘大' },
-                    { id: 20, category: '弘大', name: 'm playground', description: '服裝店', checked: false, notes: '', mapQuery: 'm playground弘大' },
-                    { id: 21, category: '弘大', name: 'carlyn雲朵店', description: '包包店', checked: false, notes: '', mapQuery: 'carlyn弘大' },
-                    { id: 22, category: '弘大', name: 'teteum文創', description: '文創店', checked: false, notes: '', mapQuery: 'teteum弘大' },
-                    { id: 23, category: '弘大', name: 'beok文創', description: '文創店', checked: false, notes: '', mapQuery: 'beok弘大' },
+                    { id: 20, category: '弘大', name: 'M Playground', description: '服裝店', checked: false, notes: '', mapQuery: 'M Playground弘大' },
+                    { id: 21, category: '弘大', name: 'Carlyn雲朵店', description: '包包店', checked: false, notes: '', mapQuery: 'Carlyn弘大' },
+                    { id: 22, category: '弘大', name: 'Teteum文創', description: '文創店', checked: false, notes: '', mapQuery: 'Teteum弘大' },
+                    { id: 23, category: '弘大', name: 'Beok文創', description: '文創店', checked: false, notes: '', mapQuery: 'Beok弘大' },
                     { id: 24, category: '弘大', name: '橡子漫畫', description: '漫畫店', checked: false, notes: '', mapQuery: '橡子漫畫弘大' },
                     
                     { id: 25, category: '東大門', name: '現代City Outlet', description: '購物中心', checked: false, notes: '', mapQuery: '現代City Outlet東大門' },
                     { id: 26, category: '東大門', name: 'Migliore', description: '購物中心', checked: false, notes: '', mapQuery: 'Migliore東大門' },
-                    { id: 27, category: '東大門', name: 'HelloAPM', description: '購物中心', checked: false, notes: '', mapQuery: 'HelloAPM東大門' },
+                    { id: 27, category: '東大門', name: 'Helloapm', description: '購物中心', checked: false, notes: '', mapQuery: 'Helloapm東大門' },
                     { id: 28, category: '東大門', name: 'Doota', description: '購物中心', checked: false, notes: '', mapQuery: 'Doota東大門' },
-                    { id: 29, category: '東大門', name: 'DDP Fashion Mall', description: '購物中心', checked: false, notes: '', mapQuery: 'DDP Fashion Mall' },
-                    { id: 30, category: '東大門', name: 'apM Luxe', description: '購物中心', checked: false, notes: '', mapQuery: 'apM Luxe東大門' },
-                    { id: 31, category: '東大門', name: 'DDP東大門設計廣場', description: '設計廣場', checked: false, notes: '', mapQuery: 'DDP東大門設計廣場' },
+                    { id: 29, category: '東大門', name: 'Ddp Fashion Mall', description: '購物中心', checked: false, notes: '', mapQuery: 'Ddp Fashion Mall' },
+                    { id: 30, category: '東大門', name: 'Apm Luxe', description: '購物中心', checked: false, notes: '', mapQuery: 'Apm Luxe東大門' },
+                    { id: 31, category: '東大門', name: 'Ddp東大門設計廣場', description: '設計廣場', checked: false, notes: '', mapQuery: 'Ddp東大門設計廣場' },
                     
                     { id: 32, category: '聖水洞', name: '大林倉庫', description: '咖啡廳', checked: false, notes: '', mapQuery: '大林倉庫聖水洞' },
-                    { id: 33, category: '聖水洞', name: 'emis', description: '服裝店', checked: false, notes: '', mapQuery: 'emis聖水洞' },
-                    { id: 34, category: '聖水洞', name: 'matin kim', description: '服裝店', checked: false, notes: '', mapQuery: 'matin kim聖水洞' },
-                    { id: 35, category: '聖水洞', name: 'stand oil', description: '服裝店', checked: false, notes: '', mapQuery: 'stand oil聖水洞' },
-                    { id: 36, category: '聖水洞', name: 'minitnute', description: '飾品店', checked: false, notes: '', mapQuery: 'minitnute聖水洞' },
-                    { id: 37, category: '聖水洞', name: 'fwee彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'fwee聖水洞' },
-                    { id: 38, category: '聖水洞', name: 'somewhere butter', description: '咖啡廳', checked: false, notes: '', mapQuery: 'somewhere butter聖水洞' }
+                    { id: 33, category: '聖水洞', name: 'Emis', description: '服裝店', checked: false, notes: '', mapQuery: 'Emis聖水洞' },
+                    { id: 34, category: '聖水洞', name: 'Matin Kim', description: '服裝店', checked: false, notes: '', mapQuery: 'Matin Kim聖水洞' },
+                    { id: 35, category: '聖水洞', name: 'Stand Oil', description: '服裝店', checked: false, notes: '', mapQuery: 'Stand Oil聖水洞' },
+                    { id: 36, category: '聖水洞', name: 'Minitnute', description: '飾品店', checked: false, notes: '', mapQuery: 'Minitnute聖水洞' },
+                    { id: 37, category: '聖水洞', name: 'Fwee彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'Fwee聖水洞' },
+                    { id: 38, category: '聖水洞', name: 'Somewhere Butter', description: '咖啡廳', checked: false, notes: '', mapQuery: 'Somewhere Butter聖水洞' }
                 ]);
                 
                 // 新增店舖建議
                 const newShop = ref({
                     name: '',
-                    location: '',
+                    category: '',
+                    newCategory: '',
                     description: ''
                 });
                 
@@ -679,6 +999,17 @@
                     return shoppingList.value.filter(shop => shop.category === category);
                 };
                 
+                const capitalizeFirstLetter = (str) => {
+                    if (!str) return '';
+                    // 將每個單詞的首字母大寫
+                    return str.toLowerCase().split(' ').map(word => {
+                        if (word.length > 0) {
+                            return word.charAt(0).toUpperCase() + word.slice(1);
+                        }
+                        return word;
+                    }).join(' ');
+                };
+                
                 const openNaverMap = (location) => {
                     const query = encodeURIComponent(location + ' 서울');
                     const url = `https://map.naver.com/v5/search/${query}`;
@@ -692,21 +1023,57 @@
                     window.open(url, '_blank');
                 };
                 
+                const addNewFood = () => {
+                    if (!newFood.value.name.trim()) {
+                        alert('請輸入美食名稱');
+                        return;
+                    }
+                    
+                    suggestedFoods.value.push({
+                        ...newFood.value,
+                        id: Date.now()
+                    });
+                    
+                    // 清空表單
+                    newFood.value = {
+                        name: '',
+                        location: '',
+                        description: ''
+                    };
+                    
+                    alert('已添加到建議美食清單！');
+                };
+                
                 const addNewShop = () => {
                     if (!newShop.value.name.trim()) {
                         alert('請輸入店舖名稱');
                         return;
                     }
                     
+                    if (!newShop.value.category) {
+                        alert('請選擇地區分類');
+                        return;
+                    }
+                    
+                    let category = newShop.value.category;
+                    if (category === 'new' && newShop.value.newCategory.trim()) {
+                        category = newShop.value.newCategory.trim();
+                        // 添加到分類選項
+                        shoppingCategories.value.push({ name: category });
+                    }
+                    
                     suggestedShops.value.push({
-                        ...newShop.value,
+                        name: newShop.value.name,
+                        category: category,
+                        description: newShop.value.description,
                         id: Date.now()
                     });
                     
                     // 清空表單
                     newShop.value = {
                         name: '',
-                        location: '',
+                        category: '',
+                        newCategory: '',
                         description: ''
                     };
                     
@@ -715,9 +1082,8 @@
                 
                 // 模擬獲取天氣數據
                 const fetchWeatherData = () => {
-                    // 這裡模擬從API獲取數據
-                    // 實際應用中，您需要替換為真實的API調用
-                    console.log('獲取天氣數據...');
+                    // 這裡模擬從韓國氣象廳API獲取數據
+                    console.log('從韓國氣象廳獲取天氣數據...');
                 };
                 
                 // 初始化
@@ -735,6 +1101,7 @@
                 return {
                     activeTab,
                     selectedDay,
+                    selectedCategory,
                     weatherData,
                     weatherForecast,
                     days,
@@ -743,7 +1110,9 @@
                     foodList,
                     shoppingCategories,
                     shoppingList,
+                    newFood,
                     newShop,
+                    suggestedFoods,
                     suggestedShops,
                     tabs,
                     completedFoodCount,
@@ -751,8 +1120,10 @@
                     formatDate,
                     getDayItinerary,
                     getShopsByCategory,
+                    capitalizeFirstLetter,
                     openNaverMap,
                     openGoogleMap,
+                    addNewFood,
                     addNewShop
                 };
             }
