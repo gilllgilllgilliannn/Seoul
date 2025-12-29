@@ -4,510 +4,355 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首爾旅行助手</title>
-    <!-- 引入 Vue.js -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- 引入 Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
         
         * {
             font-family: 'Noto Sans TC', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
         
         body {
-            background-color: #fef9f3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            min-height: 800px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-            border-radius: 20px;
-            overflow: hidden;
-            position: relative;
-            background: linear-gradient(to bottom, #fef9f3, #f0f9ff);
-        }
-        
-        .background-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.15;
-            z-index: 0;
+            background-color: #FFF9F0;
+            color: #5A4A42;
         }
         
         .card {
-            background-color: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
-            position: relative;
-            z-index: 1;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(255, 190, 152, 0.15);
         }
         
-        .main-content {
-            padding: 20px;
-            padding-bottom: 100px;
-            position: relative;
-            z-index: 1;
+        .bg-artistic {
+            background-image: url('https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            background-color: rgba(255, 249, 240, 0.7);
         }
         
-        .timeline-item {
-            position: relative;
-            padding-left: 2rem;
-            margin-bottom: 1.5rem;
+        .tab-active {
+            background: linear-gradient(135deg, #FFC371 0%, #FF5F6D 100%);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 95, 109, 0.3);
         }
         
-        .timeline-item:before {
+        .timeline-item::before {
             content: '';
             position: absolute;
-            left: 0;
-            top: 0.5rem;
+            left: -15px;
+            top: 0;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background-color: #fbbf24;
+            background: #FF9A76;
         }
         
-        .timeline-item:after {
-            content: '';
+        .checkbox-custom:checked {
+            background-color: #FF9A76;
+            border-color: #FF9A76;
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            color: white;
             position: absolute;
-            left: 5px;
-            top: 1.5rem;
-            width: 2px;
-            height: calc(100% - 0.5rem);
-            background-color: #fbbf24;
-        }
-        
-        .timeline-item:last-child:after {
-            display: none;
-        }
-        
-        .nav-tab {
-            transition: all 0.3s ease;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.75rem 0;
-            color: #8b5a2b;
-            border-radius: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .nav-tab.active {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-        
-        .food-item-checked {
-            text-decoration: line-through;
-            color: #9ca3af;
-        }
-        
-        .weather-icon {
-            font-size: 2.5rem;
-            line-height: 1;
-        }
-        
-        .day-selector {
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            gap: 8px;
-            padding-bottom: 10px;
-        }
-        
-        .day-selector::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .day-tab {
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            padding: 8px 16px;
-            border: 1px solid #fbbf24;
-            border-radius: 20px;
-            background-color: white;
-            color: #92400e;
             font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            flex-shrink: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         
-        .day-tab.active {
-            background-color: #fef3c7;
-            color: #92400e;
-            border-color: #f59e0b;
-            transform: scale(1.05);
+        .transition-all-300 {
+            transition: all 0.3s ease;
         }
         
-        .detail-timeline-item {
-            position: relative;
-            padding-left: 2.5rem;
-            margin-bottom: 2rem;
+        /* 自定義滾動條 */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
         
-        .detail-timeline-item:before {
-            content: '';
-            position: absolute;
-            left: 0.5rem;
-            top: 0.25rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #fbbf24;
-            border: 3px solid #fef3c7;
-            z-index: 2;
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 249, 240, 0.5);
+            border-radius: 10px;
         }
         
-        .detail-timeline-item:after {
-            content: '';
-            position: absolute;
-            left: 1rem;
-            top: 1.5rem;
-            width: 2px;
-            height: calc(100% + 0.5rem);
-            background-color: #fbbf24;
-            z-index: 1;
+        ::-webkit-scrollbar-thumb {
+            background: #FFB87A;
+            border-radius: 10px;
         }
         
-        .detail-timeline-item:last-child:after {
-            display: none;
-        }
-        
-        .transport-icon {
-            background-color: #dbeafe;
-            color: #1d4ed8;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .fade-enter-active, .fade-leave-active {
-            transition: opacity 0.3s ease;
-        }
-        
-        .fade-enter-from, .fade-leave-to {
-            opacity: 0;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 16px;
-            z-index: 100;
-        }
-        
-        .bottom-nav .card {
-            display: flex;
-            padding: 8px;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF9A76;
         }
     </style>
 </head>
-<body>
-    <div id="app" class="app-container">
-        <!-- 背景圖片 -->
-        <div class="background-image"></div>
-        
+<body class="min-h-screen bg-artistic">
+    <div id="app" class="min-h-screen flex flex-col max-w-md mx-auto px-4 py-6">
+        <!-- 標題 -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-amber-900 mb-1">首爾旅行助手</h1>
+            <p class="text-amber-700">五日四夜首爾之旅</p>
+            <div class="mt-2 text-sm text-amber-600">1月12日 - 1月16日</div>
+        </header>
+
         <!-- 主要內容區域 -->
-        <div class="main-content">
-            <!-- 標題 -->
-            <header class="mb-6 pt-4">
-                <h1 class="text-2xl font-bold text-center text-amber-900">首爾旅行助手</h1>
-                <p class="text-center text-amber-700 mt-1">五日四夜韓國首爾之旅</p>
-            </header>
-            
-            <!-- 首頁 -->
-            <div v-if="currentPage === 'home'" class="space-y-6">
+        <main class="flex-1 overflow-y-auto mb-24">
+            <!-- 首頁 (天氣 + 行程) -->
+            <div v-if="activeTab === 'home'" class="space-y-6">
                 <!-- 天氣卡片 -->
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-amber-800 mb-4 flex items-center">
-                        <span class="material-icons mr-2">cloud</span>
-                        今日天氣
-                    </h2>
-                    
-                    <div class="flex items-center mb-4">
-                        <div class="weather-icon text-yellow-500 mr-4">
-                            <span class="material-icons">wb_sunny</span>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold text-amber-700">3°C</div>
-                            <div class="text-amber-600">首爾，晴朗</div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-sky-800">今日天氣</h2>
+                        <div class="text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-full">
+                            {{ formatDate(weatherData.date) }}
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">濕度</span>
-                            <span class="font-medium">65%</span>
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <div class="text-4xl font-bold text-amber-700">{{ weatherData.temperature }}°C</div>
+                            <div class="text-lg text-sky-700">{{ weatherData.condition }}</div>
+                            <div class="text-sm text-amber-600 mt-1">{{ weatherData.location }}</div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">日升</span>
-                            <span class="font-medium">07:42</span>
+                        <div class="text-6xl text-amber-500">
+                            <span v-if="weatherData.condition.includes('晴')">☀️</span>
+                            <span v-else-if="weatherData.condition.includes('雲')">⛅</span>
+                            <span v-else-if="weatherData.condition.includes('雪')">❄️</span>
+                            <span v-else>🌤️</span>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">體感溫度</span>
-                            <span class="font-medium">1°C</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 text-sm mt-4">
+                        <div class="bg-amber-50 p-3 rounded-lg">
+                            <div class="text-amber-600">濕度</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.humidity }}%</div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">日落</span>
-                            <span class="font-medium">17:25</span>
+                        <div class="bg-sky-50 p-3 rounded-lg">
+                            <div class="text-sky-600">日出</div>
+                            <div class="font-bold text-sky-800">{{ weatherData.sunrise }}</div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">風速</span>
-                            <span class="font-medium">12 km/h</span>
+                        <div class="bg-amber-50 p-3 rounded-lg">
+                            <div class="text-amber-600">風速</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.windSpeed }} km/h</div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-amber-700">能見度</span>
-                            <span class="font-medium">10 km</span>
+                        <div class="bg-sky-50 p-3 rounded-lg">
+                            <div class="text-sky-600">日落</div>
+                            <div class="font-bold text-sky-800">{{ weatherData.sunset }}</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- 行程卡片 -->
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-amber-800 mb-4 flex items-center">
-                        <span class="material-icons mr-2">schedule</span>
-                        簡要行程表
-                    </h2>
+                    <h2 class="text-xl font-bold text-sky-800 mb-4">今日行程</h2>
+                    
+                    <div class="flex space-x-2 mb-4">
+                        <button 
+                            v-for="day in filteredDays" 
+                            :key="day.date"
+                            @click="selectedDay = day.date"
+                            :class="selectedDay === day.date ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700'"
+                            class="px-3 py-1 rounded-full text-sm transition-all-300"
+                        >
+                            {{ day.label }}
+                        </button>
+                    </div>
                     
                     <div class="space-y-4">
-                        <div v-for="(item, index) in timelineItems" :key="index" class="timeline-item">
-                            <div class="font-bold text-amber-700">{{ item.date }}</div>
-                            <div class="text-gray-700">{{ item.title }}</div>
-                            <div class="text-sm text-gray-500">{{ item.time }}</div>
+                        <div 
+                            v-for="item in getDayItinerary(selectedDay)" 
+                            :key="item.id"
+                            class="timeline-item pl-6 relative border-l-2 border-amber-300 pb-4"
+                        >
+                            <div class="font-bold text-amber-800">{{ item.time }}</div>
+                            <div class="text-sky-800">{{ item.activity }}</div>
+                            <div class="text-sm text-amber-600 mt-1">{{ item.details }}</div>
+                            <button 
+                                @click="openNaverMap(item.location)"
+                                class="mt-2 text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
+                            >
+                                <span class="material-icons text-sm mr-1">map</span>
+                                地圖導航
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- 天氣頁面 -->
-            <div v-if="currentPage === 'weather'" class="space-y-6">
+            <div v-if="activeTab === 'weather'" class="space-y-6">
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
-                        <span class="material-icons mr-2">cloud</span>
-                        首爾天氣預報
-                    </h2>
+                    <h2 class="text-xl font-bold text-sky-800 mb-4">五日天氣預報</h2>
                     
-                    <!-- 當前天氣 -->
-                    <div class="mb-8">
-                        <h3 class="font-bold text-lg text-amber-700 mb-4">當前天氣</h3>
-                        <div class="flex items-center bg-gradient-to-r from-yellow-50 to-blue-50 p-4 rounded-xl">
-                            <div class="weather-icon text-yellow-500 mr-4">
-                                <span class="material-icons">wb_sunny</span>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-3xl font-bold text-amber-700">3°C</div>
-                                <div class="text-amber-600">晴朗，體感溫度 1°C</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-sm text-amber-700">數據來源：韓國氣象廳</div>
-                                <button @click="updateWeather" class="mt-2 text-sm bg-amber-100 text-amber-800 px-3 py-1 rounded-full flex items-center justify-center ml-auto">
-                                    <span class="material-icons text-sm mr-1">refresh</span>
-                                    更新數據
-                                </button>
-                            </div>
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-lg font-bold text-amber-700">當前天氣</div>
+                            <div class="text-sm text-amber-600">{{ weatherData.location }}</div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <div class="bg-white p-3 rounded-lg text-center">
-                                <div class="text-amber-700 font-medium">濕度</div>
-                                <div class="text-xl font-bold text-amber-800">65%</div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-3xl font-bold text-amber-700">{{ weatherData.temperature }}°C</div>
+                                <div class="text-sky-700">{{ weatherData.condition }}</div>
                             </div>
-                            <div class="bg-white p-3 rounded-lg text-center">
-                                <div class="text-amber-700 font-medium">風速</div>
-                                <div class="text-xl font-bold text-amber-800">12 km/h</div>
-                            </div>
-                            <div class="bg-white p-3 rounded-lg text-center">
-                                <div class="text-amber-700 font-medium">日升</div>
-                                <div class="text-xl font-bold text-amber-800">07:42</div>
-                            </div>
-                            <div class="bg-white p-3 rounded-lg text-center">
-                                <div class="text-amber-700 font-medium">日落</div>
-                                <div class="text-xl font-bold text-amber-800">17:25</div>
+                            <div class="text-6xl text-amber-500">
+                                <span v-if="weatherData.condition.includes('晴')">☀️</span>
+                                <span v-else-if="weatherData.condition.includes('雲')">⛅</span>
+                                <span v-else-if="weatherData.condition.includes('雪')">❄️</span>
+                                <span v-else>🌤️</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- 5天預報 -->
-                    <div>
-                        <h3 class="font-bold text-lg text-amber-700 mb-4">未來5天天氣預報</h3>
-                        <div class="space-y-3">
-                            <div v-for="(day, index) in weatherForecast" :key="index" class="flex items-center bg-white p-4 rounded-xl">
-                                <div class="w-16 text-center">
-                                    <div class="font-bold text-amber-700">{{ day.day }}</div>
-                                    <div class="text-sm text-gray-500">{{ day.date }}</div>
-                                </div>
-                                <div class="weather-icon mx-4 text-yellow-500">
-                                    <span class="material-icons">{{ day.icon }}</span>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="font-bold text-amber-800">{{ day.condition }}</div>
-                                    <div class="text-sm text-gray-600">{{ day.high }}° / {{ day.low }}°</div>
+                    <div class="space-y-4">
+                        <div 
+                            v-for="forecast in weatherForecast" 
+                            :key="forecast.id"
+                            class="flex items-center justify-between p-3 bg-gradient-to-r from-amber-50 to-sky-50 rounded-xl"
+                        >
+                            <div class="font-medium text-amber-800">{{ forecast.day }}</div>
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-3">
+                                    <span v-if="forecast.condition.includes('晴')">☀️</span>
+                                    <span v-else-if="forecast.condition.includes('雲')">⛅</span>
+                                    <span v-else-if="forecast.condition.includes('雪')">❄️</span>
+                                    <span v-else>🌤️</span>
                                 </div>
                                 <div class="text-right">
-                                    <div class="font-bold text-amber-800">{{ day.temp }}°</div>
-                                    <div class="text-sm text-gray-600">{{ day.precip }}% 降水</div>
+                                    <div class="font-bold text-amber-700">{{ forecast.temperature }}°C</div>
+                                    <div class="text-xs text-sky-600">{{ forecast.condition }}</div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card p-5">
+                    <h3 class="font-bold text-sky-800 mb-3">天氣詳細資料</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-amber-50 p-3 rounded-lg">
+                            <div class="text-amber-600">體感溫度</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.feelsLike }}°C</div>
+                        </div>
+                        <div class="bg-sky-50 p-3 rounded-lg">
+                            <div class="text-sky-600">降水機率</div>
+                            <div class="font-bold text-sky-800">{{ weatherData.precipitation }}%</div>
+                        </div>
+                        <div class="bg-amber-50 p-3 rounded-lg">
+                            <div class="text-amber-600">紫外線指數</div>
+                            <div class="font-bold text-amber-800">{{ weatherData.uvIndex }}</div>
+                        </div>
+                        <div class="bg-sky-50 p-3 rounded-lg">
+                            <div class="text-sky-600">能見度</div>
+                            <div class="font-bold text-sky-800">{{ weatherData.visibility }} km</div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <!-- 行程頁面 -->
-            <div v-if="currentPage === 'schedule'" class="space-y-6">
+            <div v-if="activeTab === 'itinerary'" class="space-y-6">
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
-                        <span class="material-icons mr-2">calendar_today</span>
-                        詳細行程表
-                    </h2>
+                    <h2 class="text-xl font-bold text-sky-800 mb-4">完整行程表</h2>
                     
-                    <!-- 日子選擇器 -->
-                    <div class="mb-6">
-                        <div class="day-selector">
+                    <div class="flex space-x-2 overflow-x-auto pb-2 mb-4">
+                        <button 
+                            v-for="day in days" 
+                            :key="day.date"
+                            @click="selectedDay = day.date"
+                            :class="selectedDay === day.date ? 'bg-amber-500 text-white' : 'bg-amber-100 text-amber-700'"
+                            class="px-4 py-2 rounded-full whitespace-nowrap transition-all-300"
+                        >
+                            {{ day.label }}
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div 
+                            v-for="item in getDayItinerary(selectedDay)" 
+                            :key="item.id"
+                            class="timeline-item pl-6 relative border-l-2 border-amber-300 pb-6 last:pb-0"
+                        >
+                            <div class="absolute -left-2 top-0 w-4 h-4 rounded-full bg-amber-400 border-2 border-white"></div>
+                            <div class="font-bold text-lg text-amber-800">{{ item.time }}</div>
+                            <div class="font-medium text-sky-800 text-lg mb-1">{{ item.activity }}</div>
+                            <div class="text-amber-700 mb-2">{{ item.details }}</div>
+                            <div class="text-sm text-sky-600 mb-3 flex items-center">
+                                <span class="material-icons text-sm mr-1">directions_transit</span>
+                                {{ item.transport }}
+                            </div>
                             <button 
-                                v-for="day in scheduleDetails" 
-                                :key="day.date"
-                                @click="selectDay(day.date)"
-                                class="day-tab"
-                                :class="{'active': selectedDay === day.date}"
+                                @click="openNaverMap(item.location)"
+                                class="mt-1 text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 px-4 py-2 rounded-full inline-flex items-center transition-all-300"
                             >
-                                {{ day.date }}（{{ day.day }}）
+                                <span class="material-icons text-base mr-1">map</span>
+                                Naver地圖導航
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- 選中日子的行程 -->
-                    <transition name="fade" mode="out-in">
-                        <div v-if="selectedDay" key="selected-day-content" class="space-y-6">
-                            <!-- 查找選中的日子 -->
-                            <template v-for="day in scheduleDetails" :key="day.date">
-                                <div v-if="selectedDay === day.date" class="space-y-6">
-                                    <!-- 日期標題 -->
-                                    <div class="bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-xl">
-                                        <h3 class="font-bold text-lg text-amber-800">{{ day.date }}（{{ day.day }}）</h3>
-                                        <p class="text-amber-600 text-sm mt-1">{{ day.overview }}</p>
-                                    </div>
-                                    
-                                    <!-- 時間軸行程 -->
-                                    <div class="space-y-1">
-                                        <div v-for="(item, index) in day.items" :key="index" class="detail-timeline-item">
-                                            <div class="bg-white p-4 rounded-xl shadow-sm">
-                                                <!-- 時間標籤 -->
-                                                <div class="flex items-center mb-2">
-                                                    <span class="material-icons text-amber-500 text-sm mr-2">schedule</span>
-                                                    <span class="font-bold text-amber-700">{{ item.time }}</span>
-                                                    <span v-if="item.duration" class="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
-                                                        約{{ item.duration }}
-                                                    </span>
-                                                </div>
-                                                
-                                                <!-- 活動內容 -->
-                                                <div class="font-medium text-gray-800 mb-2">{{ item.activity }}</div>
-                                                
-                                                <!-- 交通資訊 -->
-                                                <div v-if="item.transport" class="flex items-start mt-3 mb-3">
-                                                    <div class="transport-icon mr-2">
-                                                        <span class="material-icons text-sm">directions_transit</span>
-                                                    </div>
-                                                    <div class="text-sm text-gray-600 flex-1">{{ item.transport }}</div>
-                                                </div>
-                                                
-                                                <!-- 地圖按鈕 -->
-                                                <div class="flex justify-end mt-3">
-                                                    <button @click="openNaverMap(item)" class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg flex items-center text-sm">
-                                                        <span class="material-icons text-sm mr-1">map</span>
-                                                        Naver地圖導航
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </transition>
                 </div>
             </div>
             
-            <!-- 美食頁面 -->
-            <div v-if="currentPage === 'food'" class="space-y-6">
+            <!-- 美食清單頁面 -->
+            <div v-if="activeTab === 'food'" class="space-y-6">
                 <div class="card p-5">
-                    <h2 class="text-xl font-bold text-amber-800 mb-6 flex items-center">
-                        <span class="material-icons mr-2">restaurant</span>
-                        美食清單
-                    </h2>
+                    <h2 class="text-xl font-bold text-sky-800 mb-4">美食清單</h2>
                     
-                    <div class="mb-6">
-                        <div class="text-amber-700 mb-2">已完成 {{ checkedCount }} / {{ foodList.length }}</div>
-                        <div class="w-full bg-amber-100 rounded-full h-3">
-                            <div class="bg-amber-500 h-3 rounded-full" :style="{width: `${(checkedCount/foodList.length)*100}%`}"></div>
-                        </div>
+                    <div class="mb-4 text-amber-700">
+                        <span class="font-medium">{{ completedFoodCount }}/{{ foodList.length }}</span> 項已完成
                     </div>
                     
                     <div class="space-y-4">
-                        <div v-for="(food, index) in foodList" :key="index" class="bg-white p-4 rounded-xl">
+                        <div 
+                            v-for="food in foodList" 
+                            :key="food.id"
+                            class="bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
+                        >
                             <div class="flex items-start">
-                                <div class="flex items-center h-6">
-                                    <input type="checkbox" :id="'food-' + index" v-model="food.checked" class="h-5 w-5 text-amber-600 rounded">
+                                <div class="mr-3 mt-1">
+                                    <input 
+                                        type="checkbox" 
+                                        :id="'food-' + food.id" 
+                                        v-model="food.checked"
+                                        class="checkbox-custom w-5 h-5 rounded border-amber-300 text-amber-600 focus:ring-amber-200"
+                                    >
                                 </div>
-                                <div class="ml-3 flex-1">
-                                    <label :for="'food-' + index" class="font-medium text-gray-800" :class="{'food-item-checked': food.checked}">
-                                        {{ food.name }}
-                                    </label>
-                                    <div class="mt-1 text-sm text-gray-600">{{ food.location }}</div>
-                                    
-                                    <!-- 備註區域 -->
-                                    <div v-if="food.showNote" class="mt-3">
-                                        <textarea 
-                                            v-model="food.note" 
-                                            placeholder="添加備註..." 
-                                            class="w-full p-2 border border-amber-200 rounded text-sm"
-                                            rows="2"
-                                        ></textarea>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <label 
+                                                :for="'food-' + food.id" 
+                                                :class="food.checked ? 'line-through text-amber-500' : 'text-amber-800'"
+                                                class="font-bold text-lg cursor-pointer"
+                                            >
+                                                {{ food.name }}
+                                            </label>
+                                            <div class="text-sm text-sky-700 mt-1">{{ food.location }}</div>
+                                        </div>
+                                        <button 
+                                            @click="openGoogleMap(food.mapQuery)"
+                                            class="text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
+                                        >
+                                            <span class="material-icons text-sm mr-1">place</span>
+                                            地圖
+                                        </button>
                                     </div>
                                     
-                                    <!-- 操作按鈕 -->
-                                    <div class="flex mt-3 space-x-2">
-                                        <button @click="openGoogleMap(food)" class="flex-1 bg-blue-50 text-blue-700 py-2 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-sm mr-1">map</span>
-                                            Google地圖
-                                        </button>
-                                        <button @click="toggleFoodNote(index)" class="px-3 py-2 bg-amber-50 text-amber-700 rounded-lg">
-                                            <span class="material-icons text-sm">note</span>
-                                        </button>
+                                    <div class="mt-3">
+                                        <textarea 
+                                            v-model="food.notes" 
+                                            placeholder="添加備注..."
+                                            class="w-full text-sm border border-amber-200 rounded-lg p-2 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300 resize-none"
+                                            rows="2"
+                                        ></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -515,48 +360,135 @@
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- 底部導航 -->
-        <div class="bottom-nav">
-            <div class="card">
+            
+            <!-- 購物清單頁面 -->
+            <div v-if="activeTab === 'shopping'" class="space-y-6">
+                <div class="card p-5">
+                    <h2 class="text-xl font-bold text-sky-800 mb-4">購物清單</h2>
+                    
+                    <div class="mb-4 text-amber-700">
+                        <span class="font-medium">{{ completedShoppingCount }}/{{ shoppingList.length }}</span> 項已完成
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div v-for="category in shoppingCategories" :key="category.name">
+                            <h3 class="font-bold text-lg text-sky-800 mb-3 pb-2 border-b border-amber-100">{{ category.name }}</h3>
+                            
+                            <div class="space-y-4">
+                                <div 
+                                    v-for="shop in getShopsByCategory(category.name)" 
+                                    :key="shop.id"
+                                    class="bg-gradient-to-r from-sky-50 to-white p-4 rounded-xl border border-sky-100"
+                                >
+                                    <div class="flex items-start">
+                                        <div class="mr-3 mt-1">
+                                            <input 
+                                                type="checkbox" 
+                                                :id="'shop-' + shop.id" 
+                                                v-model="shop.checked"
+                                                class="checkbox-custom w-5 h-5 rounded border-sky-300 text-sky-600 focus:ring-sky-200"
+                                            >
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <label 
+                                                        :for="'shop-' + shop.id" 
+                                                        :class="shop.checked ? 'line-through text-sky-500' : 'text-sky-800'"
+                                                        class="font-bold text-lg cursor-pointer"
+                                                    >
+                                                        {{ shop.name }}
+                                                    </label>
+                                                    <div class="text-sm text-amber-700 mt-1">{{ shop.description }}</div>
+                                                </div>
+                                                <button 
+                                                    @click="openGoogleMap(shop.mapQuery)"
+                                                    class="text-xs bg-sky-100 text-sky-700 hover:bg-sky-200 px-3 py-1 rounded-full inline-flex items-center transition-all-300"
+                                                >
+                                                    <span class="material-icons text-sm mr-1">place</span>
+                                                    地圖
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="mt-3">
+                                                <textarea 
+                                                    v-model="shop.notes" 
+                                                    placeholder="添加備注..."
+                                                    class="w-full text-sm border border-sky-200 rounded-lg p-2 bg-sky-50 focus:outline-none focus:ring-1 focus:ring-sky-300 resize-none"
+                                                    rows="2"
+                                                ></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 新增建議區域 -->
+                    <div class="mt-8 pt-6 border-t border-amber-200">
+                        <h3 class="font-bold text-lg text-sky-800 mb-3">添加新店舖建議</h3>
+                        <div class="space-y-3">
+                            <input 
+                                v-model="newShop.name" 
+                                type="text" 
+                                placeholder="店舖名稱" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                            >
+                            <input 
+                                v-model="newShop.location" 
+                                type="text" 
+                                placeholder="地區 (例如: 明洞、弘大等)" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                            >
+                            <textarea 
+                                v-model="newShop.description" 
+                                placeholder="店舖描述" 
+                                class="w-full border border-amber-200 rounded-lg p-3 bg-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-300"
+                                rows="2"
+                            ></textarea>
+                            <button 
+                                @click="addNewShop"
+                                class="w-full bg-gradient-to-r from-amber-400 to-amber-500 text-white font-bold py-3 rounded-lg hover:from-amber-500 hover:to-amber-600 transition-all-300"
+                            >
+                                添加到建議清單
+                            </button>
+                        </div>
+                        
+                        <!-- 顯示已添加的建議 -->
+                        <div v-if="suggestedShops.length > 0" class="mt-6">
+                            <h4 class="font-bold text-sky-800 mb-2">您的建議</h4>
+                            <div class="space-y-2">
+                                <div 
+                                    v-for="(shop, index) in suggestedShops" 
+                                    :key="index"
+                                    class="bg-gradient-to-r from-amber-100 to-white p-3 rounded-lg"
+                                >
+                                    <div class="font-medium text-amber-800">{{ shop.name }}</div>
+                                    <div class="text-sm text-amber-600">{{ shop.location }} - {{ shop.description }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部導航欄 -->
+        <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto px-4 pb-4">
+            <div class="card p-2 flex justify-around">
                 <button 
-                    @click="currentPage = 'home'" 
-                    class="nav-tab" 
-                    :class="{'active': currentPage === 'home'}"
+                    v-for="tab in tabs" 
+                    :key="tab.id"
+                    @click="activeTab = tab.id"
+                    :class="activeTab === tab.id ? 'tab-active' : 'text-amber-700 hover:text-amber-800'"
+                    class="flex flex-col items-center p-3 rounded-2xl transition-all-300"
                 >
-                    <span class="material-icons">home</span>
-                    <span class="text-xs mt-1">首頁</span>
-                </button>
-                
-                <button 
-                    @click="currentPage = 'weather'" 
-                    class="nav-tab" 
-                    :class="{'active': currentPage === 'weather'}"
-                >
-                    <span class="material-icons">cloud</span>
-                    <span class="text-xs mt-1">天氣</span>
-                </button>
-                
-                <button 
-                    @click="currentPage = 'schedule'" 
-                    class="nav-tab" 
-                    :class="{'active': currentPage === 'schedule'}"
-                >
-                    <span class="material-icons">calendar_today</span>
-                    <span class="text-xs mt-1">行程</span>
-                </button>
-                
-                <button 
-                    @click="currentPage = 'food'" 
-                    class="nav-tab" 
-                    :class="{'active': currentPage === 'food'}"
-                >
-                    <span class="material-icons">restaurant</span>
-                    <span class="text-xs mt-1">美食</span>
+                    <span class="material-icons text-2xl mb-1">{{ tab.icon }}</span>
+                    <span class="text-xs font-medium">{{ tab.name }}</span>
                 </button>
             </div>
-        </div>
+        </footer>
     </div>
 
     <script>
@@ -564,274 +496,264 @@
         
         createApp({
             setup() {
-                // 當前頁面
-                const currentPage = ref('home');
-                
-                // 當前選中的日子
+                // 狀態管理
+                const activeTab = ref('home');
                 const selectedDay = ref('1月12日');
                 
-                // 首頁時間軸項目
-                const timelineItems = ref([
-                    { date: '1月12日', title: '香港 → 仁川機場 → 弘大', time: '10:25 - 14:55' },
-                    { date: '1月13日', title: 'eobi雪景區 → 明洞', time: '07:10 - 20:00' },
-                    { date: '1月14日', title: '南山塔 → 明洞 → 樂天百貨', time: '09:00 - 20:00' },
-                    { date: '1月15日', title: '東大門 → 廣藏市場', time: '10:00 - 19:00' },
-                    { date: '1月16日', title: '弘大 → 仁川機場 → 香港', time: '15:30 - 22:05' }
-                ]);
+                // 天氣數據
+                const weatherData = ref({
+                    date: new Date(),
+                    temperature: -2,
+                    condition: '多雲，有雪',
+                    location: '首爾，韓國',
+                    humidity: '65',
+                    sunrise: '07:42',
+                    sunset: '17:25',
+                    windSpeed: '12',
+                    feelsLike: '-5',
+                    precipitation: '40',
+                    uvIndex: '2 (低)',
+                    visibility: '10'
+                });
                 
-                // 天氣預報數據
+                // 天氣預報
                 const weatherForecast = ref([
-                    { day: '今天', date: '1/12', icon: 'wb_sunny', condition: '晴朗', temp: 3, high: 5, low: -2, precip: 0 },
-                    { day: '週二', date: '1/13', icon: 'cloud', condition: '多雲', temp: 2, high: 4, low: -3, precip: 20 },
-                    { day: '週三', date: '1/14', icon: 'wb_sunny', condition: '晴朗', temp: 4, high: 6, low: -1, precip: 0 },
-                    { day: '週四', date: '1/15', icon: 'cloudy_snowing', condition: '小雪', temp: 0, high: 2, low: -5, precip: 60 },
-                    { day: '週五', date: '1/16', icon: 'cloud', condition: '多雲', temp: 1, high: 3, low: -4, precip: 10 }
+                    { id: 1, day: '今天', temperature: -2, condition: '多雲，有雪' },
+                    { id: 2, day: '明天', temperature: -5, condition: '晴朗' },
+                    { id: 3, day: '週四', temperature: -3, condition: '局部多雲' },
+                    { id: 4, day: '週五', temperature: -1, condition: '多雲' },
+                    { id: 5, day: '週六', temperature: 1, condition: '晴朗' }
                 ]);
                 
-                // 詳細行程（改為分日顯示）
-                const scheduleDetails = ref([
-                    {
-                        date: '1月12日',
-                        day: '星期一',
-                        overview: '抵達首爾第一天，機場到酒店，弘大探索',
-                        items: [
-                            { 
-                                time: '10:25 - 14:55', 
-                                activity: '香港國際機場（起飛） → 仁川國際機場（抵達）', 
-                                transport: '飛機 (UO630)',
-                                duration: '4小時30分鐘',
-                                mapQuery: '인천국제공항'
-                            },
-                            { 
-                                time: '15:30 - 16:30', 
-                                activity: '仁川國際機場前往酒店 (Brown Suites Seoul)', 
-                                transport: '機場快線(AREX)直達列車 → 首爾站轉4號線 → 會賢站',
-                                duration: '約1小時',
-                                mapQuery: 'Brown Suites Seoul'
-                            },
-                            { 
-                                time: '17:30 - 21:00', 
-                                activity: '酒店前往弘大商業區（弘大壁畫街、文創商場、CU拉麵圖書館）', 
-                                transport: '地鐵4號線會賢站 → 忠武路站轉3號線 → 弘大入口站',
-                                duration: '約25分鐘',
-                                mapQuery: '홍대입구역'
-                            },
-                            { 
-                                time: '21:30 - 22:00', 
-                                activity: '弘大商業街返回酒店', 
-                                transport: '地鐵2號線弘大入口站 → 忠武路站轉4號線 → 會賢站',
-                                duration: '約30分鐘',
-                                mapQuery: 'Brown Suites Seoul'
-                            }
-                        ]
-                    },
-                    {
-                        date: '1月13日',
-                        day: '星期二',
-                        overview: 'eobi雪景區賞雪，明洞購物',
-                        items: [
-                            { 
-                                time: '07:10', 
-                                activity: '酒店前往明洞站3號出口', 
-                                transport: '步行或地鐵4號線會賢站 → 明洞站 (1站)',
-                                duration: '約10分鐘',
-                                mapQuery: '명동역 3번 출구'
-                            },
-                            { 
-                                time: '07:30 - 17:00', 
-                                activity: 'eobi雪景區遊覽', 
-                                transport: '專車接送或地鐵前往',
-                                duration: '全天活動',
-                                mapQuery: '어비 눈꽃명소'
-                            },
-                            { 
-                                time: '17:30 - 20:00', 
-                                activity: '明洞商業街購物與晚餐', 
-                                transport: '從eobi雪景區返回明洞',
-                                duration: '約2.5小時',
-                                mapQuery: '명동거리'
-                            },
-                            { 
-                                time: '20:30 - 21:00', 
-                                activity: '明洞返回酒店', 
-                                transport: '步行或地鐵4號線明洞站 → 會賢站',
-                                duration: '約10分鐘',
-                                mapQuery: 'Brown Suites Seoul'
-                            }
-                        ]
-                    },
-                    {
-                        date: '1月14日',
-                        day: '星期三',
-                        overview: '南山塔觀光，明洞和樂天百貨購物',
-                        items: [
-                            { 
-                                time: '09:00 - 12:00', 
-                                activity: '酒店前往南山塔 (N Seoul Tower)', 
-                                transport: '步行至明洞站 → 纜車上山',
-                                duration: '約30分鐘',
-                                mapQuery: 'N서울타워'
-                            },
-                            { 
-                                time: '12:30 - 15:00', 
-                                activity: '南山塔前往明洞午餐', 
-                                transport: '纜車下山 → 步行至明洞',
-                                duration: '約20分鐘',
-                                mapQuery: '명동역'
-                            },
-                            { 
-                                time: '15:30 - 18:30', 
-                                activity: '明洞前往樂天百貨購物', 
-                                transport: '步行',
-                                duration: '約5分鐘',
-                                mapQuery: '롯데백화점 명동점'
-                            },
-                            { 
-                                time: '19:00 - 19:30', 
-                                activity: '樂天百貨返回酒店', 
-                                transport: '步行',
-                                duration: '約15分鐘',
-                                mapQuery: 'Brown Suites Seoul'
-                            }
-                        ]
-                    },
-                    {
-                        date: '1月15日',
-                        day: '星期四',
-                        overview: '東大門購物，廣藏市場美食',
-                        items: [
-                            { 
-                                time: '10:00 - 10:30', 
-                                activity: '酒店前往東大門', 
-                                transport: '地鐵4號線會賢站 → 東大門歷史文化公園站',
-                                duration: '約15分鐘',
-                                mapQuery: '동대문역사문화공원역'
-                            },
-                            { 
-                                time: '10:30 - 16:00', 
-                                activity: '東大門商圈購物 (DDP、APM等)', 
-                                transport: '步行遊覽',
-                                duration: '約5.5小時',
-                                mapQuery: '동대문 패션타운'
-                            },
-                            { 
-                                time: '16:30 - 18:30', 
-                                activity: '東大門前往廣藏市場', 
-                                transport: '地鐵1號線東大門站 → 鐘路5街站',
-                                duration: '約10分鐘',
-                                mapQuery: '광장시장'
-                            },
-                            { 
-                                time: '19:00 - 19:30', 
-                                activity: '廣藏市場返回酒店', 
-                                transport: '地鐵1號線鐘路5街站 → 首爾站轉4號線 → 會賢站',
-                                duration: '約20分鐘',
-                                mapQuery: 'Brown Suites Seoul'
-                            }
-                        ]
-                    },
-                    {
-                        date: '1月16日',
-                        day: '星期五',
-                        overview: '弘大最後購物，返回香港',
-                        items: [
-                            { 
-                                time: '10:00 - 12:00', 
-                                activity: '酒店前往弘大商業街', 
-                                transport: '地鐵4號線會賢站 → 忠武路站轉3號線 → 弘大入口站',
-                                duration: '約25分鐘',
-                                mapQuery: '홍대입구역'
-                            },
-                            { 
-                                time: '12:00 - 15:00', 
-                                activity: '弘大最後購物與午餐', 
-                                transport: '步行遊覽',
-                                duration: '約3小時',
-                                mapQuery: '홍대거리'
-                            },
-                            { 
-                                time: '15:30 - 16:20', 
-                                activity: '弘大前往仁川國際機場', 
-                                transport: '機場快線(AREX)弘大入口站直達仁川機場',
-                                duration: '約50分鐘',
-                                mapQuery: '인천국제공항'
-                            },
-                            { 
-                                time: '16:50 - 22:05', 
-                                activity: '仁川國際機場（起飛） → 香港國際機場（抵達）', 
-                                transport: '飛機 (TW643)',
-                                duration: '4小時15分鐘',
-                                mapQuery: '인천국제공항'
-                            }
-                        ]
-                    }
+                // 行程天數
+                const days = ref([
+                    { date: '1月12日', label: '1/12 (一)' },
+                    { date: '1月13日', label: '1/13 (二)' },
+                    { date: '1月14日', label: '1/14 (三)' },
+                    { date: '1月15日', label: '1/15 (四)' },
+                    { date: '1月16日', label: '1/16 (五)' }
+                ]);
+                
+                // 首頁只顯示今天和明天
+                const filteredDays = computed(() => {
+                    return days.value.slice(0, 2);
+                });
+                
+                // 行程數據
+                const itinerary = ref([
+                    { id: 1, date: '1月12日', time: '10:25 - 14:55', activity: '香港國際機場 → 仁川國際機場', details: '起飛時間 10:25，抵達時間 14:55', transport: '飛機', location: '仁川國際機場' },
+                    { id: 2, date: '1月12日', time: '15:30 - 16:30', activity: '仁川國際機場 → 酒店', details: 'Brown Suites Seoul 브라운스위트 서울', transport: '機場快線 + 地鐵約1小時', location: 'Brown Suites Seoul' },
+                    { id: 3, date: '1月12日', time: '17:30 - 21:00', activity: '酒店 → 弘大商業街', details: '弘大壁畫街、文創商場、CU拉麵圖書館', transport: '地鐵約30分鐘', location: '弘大商業街' },
+                    { id: 4, date: '1月12日', time: '21:30 - 22:00', activity: '弘大商業街 → 酒店', details: '返回酒店休息', transport: '地鐵約30分鐘', location: 'Brown Suites Seoul' },
+                    
+                    { id: 5, date: '1月13日', time: '07:10', activity: '酒店 → 明洞站3號出口', details: '前往集合點', transport: '地鐵約40分鐘', location: '明洞站3號出口' },
+                    { id: 6, date: '1月13日', time: '08:00 - 16:30', activity: 'eobi雪景區', details: '欣賞雪景，拍照', transport: '旅遊巴士', location: 'eobi雪景區' },
+                    { id: 7, date: '1月13日', time: '17:30 - 20:00', activity: '明洞商業街', details: '購物和晚餐', transport: '步行', location: '明洞商業街' },
+                    { id: 8, date: '1月13日', time: '20:30 - 21:00', activity: '明洞 → 酒店', details: '返回酒店休息', transport: '地鐵約40分鐘', location: 'Brown Suites Seoul' },
+                    
+                    { id: 9, date: '1月14日', time: '09:00 - 12:00', activity: '酒店 → 南山塔', details: '觀光和拍照', transport: '地鐵 + 步行約50分鐘', location: '南山塔' },
+                    { id: 10, date: '1月14日', time: '12:30 - 14:00', activity: '南山塔 → 明洞', details: '午餐時間', transport: '步行約20分鐘', location: '明洞' },
+                    { id: 11, date: '1月14日', time: '14:30 - 16:00', activity: '明洞 → 樂天百貨', details: '購物', transport: '步行約10分鐘', location: '樂天百貨' },
+                    { id: 12, date: '1月14日', time: '16:30 - 18:00', activity: '樂天百貨 → 新世界免稅店', details: '購物', transport: '步行約15分鐘', location: '新世界免稅店' },
+                    { id: 13, date: '1月14日', time: '18:30 - 20:00', activity: '新世界免稅店 → 南大門市場', details: '晚餐和購物', transport: '步行約20分鐘', location: '南大門市場' },
+                    { id: 14, date: '1月14日', time: '20:30 - 21:00', activity: '南大門市場 → 酒店', details: '返回酒店休息', transport: '地鐵約30分鐘', location: 'Brown Suites Seoul' },
+                    
+                    { id: 15, date: '1月15日', time: '10:00 - 13:00', activity: '酒店 → 東大門', details: '購物', transport: '地鐵約40分鐘', location: '東大門' },
+                    { id: 16, date: '1月15日', time: '13:30 - 15:30', activity: '東大門 → 廣藏市場', details: '午餐和購物', transport: '地鐵約20分鐘', location: '廣藏市場' },
+                    { id: 17, date: '1月15日', time: '16:00 - 19:00', activity: '廣藏市場 → 聖水洞', details: '文青區探索', transport: '地鐵約30分鐘', location: '聖水洞' },
+                    { id: 18, date: '1月15日', time: '19:30 - 20:00', activity: '聖水洞 → 酒店', details: '返回酒店休息', transport: '地鐵約40分鐘', location: 'Brown Suites Seoul' },
+                    
+                    { id: 19, date: '1月16日', time: '10:00 - 15:00', activity: '酒店 → 弘大', details: '最後購物和午餐', transport: '地鐵約30分鐘', location: '弘大' },
+                    { id: 20, date: '1月16日', time: '15:30 - 16:20', activity: '弘大 → 仁川國際機場', details: '前往機場', transport: '地鐵 + 機場快線約50分鐘', location: '仁川國際機場' },
+                    { id: 21, date: '1月16日', time: '16:50 - 18:50', activity: 'Check-in 和登機', details: '航班 OZ745', transport: '機場內', location: '仁川國際機場' },
+                    { id: 22, date: '1月16日', time: '18:50 - 22:05', activity: '仁川國際機場 → 香港國際機場', details: '起飛時間 18:50，抵達時間 22:05', transport: '飛機', location: '香港國際機場' }
                 ]);
                 
                 // 美食清單
                 const foodList = ref([
-                    { name: '醬油蟹', location: '弘大弘益醬蟹', checked: false, note: '', showNote: true },
-                    { name: '鐵板炒雞', location: '明洞Bandak Bandak', checked: false, note: '', showNote: true },
-                    { name: '韓式燒肉', location: '明洞荒謬的生肉', checked: false, note: '', showNote: true },
-                    { name: '韓式部隊鍋', location: '明洞樂伯部隊鍋', checked: false, note: '', showNote: true },
-                    { name: '炸雞', location: '東大門橋村炸雞1號店', checked: false, note: '', showNote: true },
-                    { name: '生拌牛肉', location: '廣藏市場富村生牛肉', checked: false, note: '', showNote: true },
-                    { name: '米熱狗', location: '各分店', checked: false, note: '想嘗試莫札瑞拉起司口味', showNote: true },
-                    { name: '人參雞湯', location: '土俗村蔘雞湯', checked: false, note: '', showNote: true }
+                    { id: 1, name: '醬油蟹', location: '弘大弘益醬蟹', checked: false, notes: '', mapQuery: '弘大弘益醬蟹' },
+                    { id: 2, name: '鐵板炒雞', location: '明洞Bandak Bandak', checked: false, notes: '', mapQuery: '明洞Bandak Bandak' },
+                    { id: 3, name: '韓式燒肉', location: '明洞荒謬的生肉', checked: false, notes: '', mapQuery: '明洞荒謬的生肉' },
+                    { id: 4, name: '韓式部隊鍋', location: '明洞樂伯部隊鍋', checked: false, notes: '', mapQuery: '明洞樂伯部隊鍋' },
+                    { id: 5, name: '炸雞', location: '東大門橋村炸雞1號店', checked: false, notes: '', mapQuery: '東大門橋村炸雞1號店' },
+                    { id: 6, name: '泡菜', location: '廣藏市場', checked: false, notes: '', mapQuery: '廣藏市場泡菜' },
+                    { id: 7, name: '生拌牛肉', location: '廣藏市場富村生牛肉', checked: false, notes: '', mapQuery: '廣藏市場富村生牛肉' },
+                    { id: 8, name: '烤肉', location: '弘大DOMA', checked: false, notes: '', mapQuery: '弘大DOMA烤肉' },
+                    { id: 9, name: '薄荷朱古力', location: '弘大MintChoco', checked: false, notes: '', mapQuery: '弘大MintChoco' },
+                    { id: 10, name: '咖啡', location: 'oats coffee', checked: false, notes: '', mapQuery: 'oats coffee Seoul' },
+                    { id: 11, name: '米熱狗', location: '各處小攤', checked: false, notes: '', mapQuery: '首爾米熱狗' },
+                    { id: 12, name: '人參雞湯', location: '土俗村人參雞湯', checked: false, notes: '', mapQuery: '土俗村人參雞湯' }
                 ]);
                 
-                // 計算已選擇的美食數量
-                const checkedCount = computed(() => {
+                // 購物分類
+                const shoppingCategories = ref([
+                    { name: '明洞' },
+                    { name: '弘大' },
+                    { name: '東大門' },
+                    { name: '聖水洞' }
+                ]);
+                
+                // 購物清單
+                const shoppingList = ref([
+                    { id: 1, category: '明洞', name: 'nyunyu飾品店', description: '飾品店', checked: false, notes: '', mapQuery: 'nyunyu明洞' },
+                    { id: 2, category: '明洞', name: 'spao', description: '服裝店', checked: false, notes: '', mapQuery: 'spao明洞' },
+                    { id: 3, category: '明洞', name: 'butter雜貨店', description: '雜貨店', checked: false, notes: '', mapQuery: 'butter明洞' },
+                    { id: 4, category: '明洞', name: 'ept鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'ept明洞' },
+                    { id: 5, category: '明洞', name: 'marithe francois girband', description: '服裝店', checked: false, notes: '', mapQuery: 'marithe francois girband明洞' },
+                    { id: 6, category: '明洞', name: 'matin kim', description: '服裝店', checked: false, notes: '', mapQuery: 'matin kim明洞' },
+                    { id: 7, category: '明洞', name: 'tense彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'tense彩妝明洞' },
+                    { id: 8, category: '明洞', name: 'supy買手店', description: '買手店', checked: false, notes: '', mapQuery: 'supy明洞' },
+                    { id: 9, category: '明洞', name: 'hapa kristin隱形眼鏡店', description: '隱形眼鏡店', checked: false, notes: '', mapQuery: 'hapa kristin明洞' },
+                    { id: 10,category: '明洞', name: 'olive young', description: '美妝店', checked: false, notes: '', mapQuery: 'olive young明洞' },
+                    { id: 11, category: '明洞', name: 'lememe', description: '服裝店', checked: false, notes: '', mapQuery: 'lememe明洞' },
+                    { id: 12, category: '明洞', name: 'mlb', description: '服裝店', checked: false, notes: '', mapQuery: 'mlb明洞' },
+                    
+                    { id: 13, category: '弘大', name: 'AK Plaza', description: '購物中心', checked: false, notes: '', mapQuery: 'AK Plaza弘大' },
+                    { id: 14, category: '弘大', name: 'kakao friend', description: '卡通商品店', checked: false, notes: '', mapQuery: 'kakao friend弘大' },
+                    { id: 15, category: '弘大', name: 'kt&g想像空間', description: '文創空間', checked: false, notes: '', mapQuery: 'kt&g想像空間弘大' },
+                    { id: 16, category: '弘大', name: 'olive young', description: '美妝店', checked: false, notes: '', mapQuery: 'olive young弘大' },
+                    { id: 17, category: '弘大', name: 'musinsa standard', description: '服裝店', checked: false, notes: '', mapQuery: 'musinsa standard弘大' },
+                    { id: 18, category: '弘大', name: 'shoopen鞋店', description: '鞋店', checked: false, notes: '', mapQuery: 'shoopen弘大' },
+                    { id: 19, category: '弘大', name: '時空間飾品', description: '飾品店', checked: false, notes: '', mapQuery: '時空間弘大' },
+                    { id: 20, category: '弘大', name: 'm playground', description: '服裝店', checked: false, notes: '', mapQuery: 'm playground弘大' },
+                    { id: 21, category: '弘大', name: 'carlyn雲朵店', description: '包包店', checked: false, notes: '', mapQuery: 'carlyn弘大' },
+                    { id: 22, category: '弘大', name: 'teteum文創', description: '文創店', checked: false, notes: '', mapQuery: 'teteum弘大' },
+                    { id: 23, category: '弘大', name: 'beok文創', description: '文創店', checked: false, notes: '', mapQuery: 'beok弘大' },
+                    { id: 24, category: '弘大', name: '橡子漫畫', description: '漫畫店', checked: false, notes: '', mapQuery: '橡子漫畫弘大' },
+                    
+                    { id: 25, category: '東大門', name: '現代City Outlet', description: '購物中心', checked: false, notes: '', mapQuery: '現代City Outlet東大門' },
+                    { id: 26, category: '東大門', name: 'Migliore', description: '購物中心', checked: false, notes: '', mapQuery: 'Migliore東大門' },
+                    { id: 27, category: '東大門', name: 'HelloAPM', description: '購物中心', checked: false, notes: '', mapQuery: 'HelloAPM東大門' },
+                    { id: 28, category: '東大門', name: 'Doota', description: '購物中心', checked: false, notes: '', mapQuery: 'Doota東大門' },
+                    { id: 29, category: '東大門', name: 'DDP Fashion Mall', description: '購物中心', checked: false, notes: '', mapQuery: 'DDP Fashion Mall' },
+                    { id: 30, category: '東大門', name: 'apM Luxe', description: '購物中心', checked: false, notes: '', mapQuery: 'apM Luxe東大門' },
+                    { id: 31, category: '東大門', name: 'DDP東大門設計廣場', description: '設計廣場', checked: false, notes: '', mapQuery: 'DDP東大門設計廣場' },
+                    
+                    { id: 32, category: '聖水洞', name: '大林倉庫', description: '咖啡廳', checked: false, notes: '', mapQuery: '大林倉庫聖水洞' },
+                    { id: 33, category: '聖水洞', name: 'emis', description: '服裝店', checked: false, notes: '', mapQuery: 'emis聖水洞' },
+                    { id: 34, category: '聖水洞', name: 'matin kim', description: '服裝店', checked: false, notes: '', mapQuery: 'matin kim聖水洞' },
+                    { id: 35, category: '聖水洞', name: 'stand oil', description: '服裝店', checked: false, notes: '', mapQuery: 'stand oil聖水洞' },
+                    { id: 36, category: '聖水洞', name: 'minitnute', description: '飾品店', checked: false, notes: '', mapQuery: 'minitnute聖水洞' },
+                    { id: 37, category: '聖水洞', name: 'fwee彩妝', description: '彩妝店', checked: false, notes: '', mapQuery: 'fwee聖水洞' },
+                    { id: 38, category: '聖水洞', name: 'somewhere butter', description: '咖啡廳', checked: false, notes: '', mapQuery: 'somewhere butter聖水洞' }
+                ]);
+                
+                // 新增店舖建議
+                const newShop = ref({
+                    name: '',
+                    location: '',
+                    description: ''
+                });
+                
+                const suggestedShops = ref([]);
+                
+                // 底部導航
+                const tabs = ref([
+                    { id: 'home', name: '首頁', icon: 'home' },
+                    { id: 'weather', name: '天氣', icon: 'cloud' },
+                    { id: 'itinerary', name: '行程', icon: 'calendar_today' },
+                    { id: 'food', name: '美食', icon: 'restaurant' },
+                    { id: 'shopping', name: '購物', icon: 'shopping_bag' }
+                ]);
+                
+                // 計算屬性
+                const completedFoodCount = computed(() => {
                     return foodList.value.filter(food => food.checked).length;
                 });
                 
-                // 選擇日子
-                const selectDay = (date) => {
-                    selectedDay.value = date;
+                const completedShoppingCount = computed(() => {
+                    return shoppingList.value.filter(shop => shop.checked).length;
+                });
+                
+                // 方法
+                const formatDate = (date) => {
+                    const options = { month: 'long', day: 'numeric', weekday: 'long' };
+                    return date.toLocaleDateString('zh-Hant', options);
                 };
                 
-                // 更新天氣數據
-                const updateWeather = () => {
-                    alert('正在從韓國氣象廳更新天氣數據... (此為演示功能)');
+                const getDayItinerary = (day) => {
+                    return itinerary.value.filter(item => item.date === day);
                 };
                 
-                // 打開Naver地圖
-                const openNaverMap = (item) => {
-                    const query = encodeURIComponent(item.mapQuery || item.activity);
-                    window.open(`https://map.naver.com/v5/search/${query}`, '_blank');
+                const getShopsByCategory = (category) => {
+                    return shoppingList.value.filter(shop => shop.category === category);
                 };
                 
-                // 打開Google地圖
-                const openGoogleMap = (food) => {
-                    const query = encodeURIComponent(`${food.name} ${food.location}`);
-                    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+                const openNaverMap = (location) => {
+                    const query = encodeURIComponent(location + ' 서울');
+                    const url = `https://map.naver.com/v5/search/${query}`;
+                    window.open(url, '_blank');
+                    alert(`即將開啟Naver地圖搜索: ${location}`);
                 };
                 
-                // 切換美食備註顯示
-                const toggleFoodNote = (index) => {
-                    foodList.value[index].showNote = !foodList.value[index].showNote;
+                const openGoogleMap = (query) => {
+                    const encodedQuery = encodeURIComponent(query + ' Seoul');
+                    const url = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+                    window.open(url, '_blank');
+                };
+                
+                const addNewShop = () => {
+                    if (!newShop.value.name.trim()) {
+                        alert('請輸入店舖名稱');
+                        return;
+                    }
+                    
+                    suggestedShops.value.push({
+                        ...newShop.value,
+                        id: Date.now()
+                    });
+                    
+                    // 清空表單
+                    newShop.value = {
+                        name: '',
+                        location: '',
+                        description: ''
+                    };
+                    
+                    alert('已添加到建議清單！');
+                };
+                
+                // 模擬獲取天氣數據
+                const fetchWeatherData = () => {
+                    // 這裡模擬從API獲取數據
+                    // 實際應用中，您需要替換為真實的API調用
+                    console.log('獲取天氣數據...');
                 };
                 
                 // 初始化
                 onMounted(() => {
-                    // 設置默認選中的日子
-                    if (scheduleDetails.value.length > 0) {
-                        selectedDay.value = scheduleDetails.value[0].date;
+                    fetchWeatherData();
+                    
+                    // 設置當前日期對應的行程
+                    const today = new Date();
+                    const dayIndex = today.getDate() - 12; // 根據行程開始日期計算
+                    if (dayIndex >= 0 && dayIndex < days.value.length) {
+                        selectedDay.value = days.value[dayIndex].date;
                     }
                 });
                 
                 return {
-                    currentPage,
+                    activeTab,
                     selectedDay,
-                    timelineItems,
+                    weatherData,
                     weatherForecast,
-                    scheduleDetails,
+                    days,
+                    filteredDays,
+                    itinerary,
                     foodList,
-                    checkedCount,
-                    selectDay,
-                    updateWeather,
+                    shoppingCategories,
+                    shoppingList,
+                    newShop,
+                    suggestedShops,
+                    tabs,
+                    completedFoodCount,
+                    completedShoppingCount,
+                    formatDate,
+                    getDayItinerary,
+                    getShopsByCategory,
                     openNaverMap,
                     openGoogleMap,
-                    toggleFoodNote
+                    addNewShop
                 };
             }
         }).mount('#app');
